@@ -12,7 +12,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { transformDate } from '../../helpers/datesRanges';
+// import { transformDate } from '../../helpers/datesRanges';
 import { useRange } from '../../store/dataStore';
 import { getFioApproveIDsArr } from '../../helpers/getInfoOfSelectedUsers';
 import { format } from 'date-fns';
@@ -25,6 +25,8 @@ export const SubmitEmploymentModal = ({
   loading,
 }: any) => {
   const { startDate, endDate } = useRange();
+  console.log("🚀 ~ endDate:", endDate)
+  console.log("🚀 ~ startDate:", startDate)
 
   const selectedRows = gridApi.getSelectedRows();
 
@@ -69,6 +71,7 @@ export const SubmitEmploymentModal = ({
   const handleConfirm = async () => {
     // Фильтруем выбранные даты
     const selectedDates = datesArray.filter((date) => checkedDates[date.toISOString()]);
+    console.log("🚀 ~ handleConfirm ~ selectedDates:", selectedDates)
     // Преобразуем даты в нужный формат или выполняем необходимое действие
     await handleAction('approve', delIDiDDbArray, selectedDates);
     handleCloseSubmit();
@@ -123,7 +126,7 @@ export const SubmitEmploymentModal = ({
                 const dateKey = date.toISOString();
                 // Используем двухбуквенные сокращения дней недели
                 const dayOfWeek = format(date, 'EEEEEE', { locale: ruLocale });
-                const dayAndMonth = format(date, 'dd.MM');
+                const dayAndMonth = format(date, 'dd');
                 return (
                   <FormControlLabel
                     key={dateKey}

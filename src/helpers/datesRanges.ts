@@ -3,7 +3,7 @@
  * @param {*} datePart - Является частью даты (день, месяц или год)
  * @returns возвращает строку с 0, если число от 1 до 9 и без 0, если больше 9
  */
-const addZeroBefore = (datePart) => {
+const addZeroBefore = (datePart: number) => {
   const datePartStr = datePart.toString();
 
   if (datePartStr.length == 1) {
@@ -17,7 +17,7 @@ const addZeroBefore = (datePart) => {
  */
 export const datesRangesDefault = () => {
   const date = new Date(),
-    y = date.getFullYear().toString(),
+    y = date.getFullYear(),
     m = date.getMonth();
   const fD = new Date(y, m, 1);
   const lD = new Date(y, m + 1, 0);
@@ -52,7 +52,7 @@ export const weekDatesDefault = () => {
  * @returns строку даты в виде ${d}.${m}.${yy}
  */
 
-export const transformDate = (date) => {
+export const transformDate = (date: Date) => {
   const day = addZeroBefore(date.getDate());
   const month = addZeroBefore(date.getMonth() + 1);
   const year = addZeroBefore(date.getFullYear());
@@ -65,7 +65,7 @@ export const transformDate = (date) => {
  * @returns строку даты в виде ${d}.${m}.${yy}
  */
 
-export const transformDateYY = (date) => {
+export const transformDateYY = (date: Date) => {
   const day = addZeroBefore(date.getDate());
   const month = addZeroBefore(date.getMonth() + 1);
   let year = date.getFullYear().toString();
@@ -73,7 +73,7 @@ export const transformDateYY = (date) => {
   return `${day}.${month}.${yy}`;
 };
 
-export const readableDate = (date) => {
+export const readableDate = (date: string) => {
   const [day, month, year] = date.split('/').map(Number);
 
   const months = [
@@ -102,7 +102,7 @@ export const readableDate = (date) => {
 };
 
 // Функция для преобразования даты в строку "dd.MM.yyyy"
-export function formatDateToDDMMYYYY(date) {
+export function formatDateToDDMMYYYY(date: Date): string {
   const day = date.getDate().toString().padStart(2, '0');
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear();
