@@ -4,11 +4,11 @@ export interface RowData {
 }
 
 export interface LockedDatesData {
-    [fio: string]: any[]; // Уточните тип элементов массива, если возможно
+    [fio: string]: Date[]; 
 }
 
 export interface ApprovedDatesData {
-    [fio: string]: { [date: string]: any }[]; // Уточните тип, если возможно
+    [fio: string]: { [date: string]: any }[]; 
 }
 
 export interface UserSavedMessagesDates {

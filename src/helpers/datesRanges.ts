@@ -74,7 +74,7 @@ export const transformDateYY = (date: Date) => {
 };
 
 export const readableDate = (date: string) => {
-  const [day, month, year] = date.split('/').map(Number);
+  const [day, month, year] = date?.split('/').map(Number);
 
   const months = [
     '',

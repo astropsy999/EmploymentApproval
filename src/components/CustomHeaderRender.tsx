@@ -5,7 +5,11 @@ import { useState } from 'react';
 import { memo } from 'react';
 import { Button } from '@mui/material';
 
-const CustomHeaderRenderer = memo((props) => {
+interface CustomHeaderRendererProps {
+  columnApi: any; // replace 'any' with the actual type of columnApi
+}
+
+const CustomHeaderRenderer = memo((props: CustomHeaderRendererProps) => {
   const { columnApi } = props;
   const [isPinned, setIsPinned] = useState(false);
   const [icon, setIcon] = useState(<FaThumbtack />);

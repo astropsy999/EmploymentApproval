@@ -199,7 +199,7 @@ export const getLinkedAllUsers = async () => {
  * @returns {tableDataArr, objectsArr, typesArr, divesArr, eventsDataFioObjNew, subTypesArr}
  */
 
-export const getUsersForManagers = async (startDate, endDate) => {
+export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
   console.log('getUsersForManagers ЗАПУСК');
   namesDatesDayIDsObj = {};
   usersSavedMessagesDates = {};

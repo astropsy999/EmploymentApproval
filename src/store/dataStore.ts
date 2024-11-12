@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { getColumnDefs } from '../data/trackerCols.data';
+import { getColumnDefs } from '../data/columnDefs';
 import { weekDatesDefault } from '../helpers/datesRanges';
 import { FiltersState, GGridStoreState, IDsState, RangeState } from './dataStore.types';
 

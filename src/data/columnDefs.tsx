@@ -1,3 +1,5 @@
+import { eachDayOfInterval, format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import { readableDate, weekDatesDefault } from '../helpers/datesRanges';
 import SendMessage from '../components/SendMessage';
 import {
@@ -5,36 +7,41 @@ import {
   getLockedDatesData,
   getUsersSavedMessagesDates,
 } from './api';
-import { eachDayOfInterval, format } from 'date-fns';
 import CustomHeaderRenderer from '../components/CustomHeaderRender';
+
 import {
   ColDef,
   ValueFormatterParams,
   ICellRendererParams,
   IHeaderParams,
+  CellClassParams,
+  CellStyle,
 } from 'ag-grid-community';
-import React from 'react';
 import { ApprovedDatesData, LockedDatesData } from './data.types';
-import { ru } from 'date-fns/locale';
+import React from 'react';
 
-interface HtmlRendererProps {
-  value: string;
+// Интерфейс данных строки
+interface EmployeeData {
+  "ФИО": string;
+  [date: string]: string;
 }
 
-export const HtmlRenderer: React.FC<HtmlRendererProps> = ({ value }) => {
+// Компонент HtmlRenderer
+export const HtmlRenderer: React.FC<{ value: string }> = ({ value }) => {
   return (
-    <>
-      <div dangerouslySetInnerHTML={{ __html: value }} />
-    </>
+    <div dangerouslySetInnerHTML={{ __html: value }} />
   );
 };
 
 export default HtmlRenderer;
 
+// Функция для получения столбцов
 export function getColumnDefs (
   start: Date = weekDatesDefault()[0],
   end: Date = weekDatesDefault()[1],
 ): ColDef[] {
+  console.log('Imported locale ru in columnDefs.ts:', ru);
+
   const columnDefs: ColDef[] = [];
 
   let interval: Date[] = [];
@@ -42,25 +49,24 @@ export function getColumnDefs (
     interval = eachDayOfInterval({ start, end });
   }
 
-  function stripHtmlTags(input: string | null | undefined) {
-    return input?.replace(/<[^>]*>/g, '');
+  // Функция для удаления HTML-тегов
+  function stripHtmlTags(input: string | null | undefined): string {
+    return input?.replace(/<[^>]*>/g, '') || '';
   }
 
-  const noHTMLValueFormatter = (params: ValueFormatterParams) => {
-    const stripHtml = params.value;
-
+  // Форматировщик без HTML
+  const noHTMLValueFormatter = (params: ValueFormatterParams): string => {
+    const stripHtml = params.value as string | undefined;
     return stripHtmlTags(stripHtml) || '';
   };
 
-  // Фамилии всех пользователей
-
+  // Добавление столбца "ФИО"
   columnDefs.push({
     field: 'ФИО',
     valueFormatter: noHTMLValueFormatter,
     filter: 'agSetColumnFilter',
     filterParams: {
       valueFormatter: noHTMLValueFormatter,
-      // suppressSelectAll: true,
     },
     menuTabs: ['filterMenuTab'],
     headerCheckboxSelection: true,
@@ -69,7 +75,6 @@ export function getColumnDefs (
     pinned: 'left',
     sort: 'asc',
     cellRenderer: 'htmlRenderer',
-
     cellStyle: {
       backgroundColor: '#e8f1fc1a',
       fontWeight: '300',
@@ -77,50 +82,56 @@ export function getColumnDefs (
       fontStyle: 'italic',
     },
   });
+
+  // Добавление столбцов с датами
   interval.forEach((item) => {
-    const formatItem = format(item, 'dd/MM/yyyy', {locale: ru});
-    console.log("🚀 ~ interval.forEach ~ formatItem:", formatItem)
+    if (!(item instanceof Date) || isNaN(item.getTime())) {
+      console.error('Invalid date:', item);
+      return;
+    }
+
+    const formattedDate = format(item, 'dd/MM/yyyy', { locale: ru });
     columnDefs.push({
-      headerName: readableDate(formatItem),
-      field: formatItem,
+      headerName: readableDate(formattedDate), 
+      field: formattedDate,
       filter: false,
       menuTabs: [],
       cellRenderer: 'htmlRenderer',
-      cellStyle: (params: ICellRendererParams) => {
-        const fio = params.data['ФИО']?.split('<')[0].trim();
+      cellStyle: (params: CellClassParams<any, any>) => {
+        const data = params.data as EmployeeData;
+        const fio = data['ФИО']?.split('<')[0].trim();
         const lockedDates: LockedDatesData = getLockedDatesData();
         const approvedDates: ApprovedDatesData = getApprovedDates();
 
         function isDayLocked(): boolean {
-          return fio && lockedDates[fio]?.length > 0;
-        }
-        function isDayApproved(): boolean {
-          const date = format(item, 'dd/MM/yyyy').replace(/\//g, '.');
-          const dateExists = approvedDates[fio]?.some((obj: any) => date in obj);
-          return fio && approvedDates[fio]?.length > 0 && dateExists;
+          return lockedDates[fio]?.length > 0;
         }
 
-        if (isDayLocked()) {
-          return {
-            backgroundColor: '#ffe7d6',
-            zIndex: 10000,
-            opacity: 0.5,
-            borderRight: '1px solid #dde2eb',
-          };
-        } else if (isDayApproved()) {
-          return {
-            backgroundColor: '#aae0ac42',
-            zIndex: 10000,
-            borderRight: '1px solid #dde2eb',
-          };
+        function isDayApproved(): boolean {
+          const date = format(item, 'dd/MM/yyyy', { locale: ru }).replace(/\//g, '.');
+          const dateExists = approvedDates[fio]?.some((obj: any) => date in obj);
+          return approvedDates[fio]?.length > 0 && dateExists;
         }
-        return {
+
+        const style: CellStyle = {
           borderRight: '1px solid #dde2eb',
+          opacity: 1,
         };
+
+        if (isDayLocked()) {
+          style.backgroundColor = '#ffe7d6';
+          style.zIndex = 10000;
+        } else if (isDayApproved()) {
+          style.backgroundColor = '#aae0ac42';
+          style.zIndex = 10000;
+        }
+      
+        return style;
       },
     });
   });
 
+  // Добавление столбца "\u03A3"
   columnDefs.push({
     headerName: '\u03A3',
     field: '\u03A3',
@@ -129,33 +140,33 @@ export function getColumnDefs (
     pinned: 'right',
     width: 80,
 
-    cellStyle: function (params: IHeaderParams) {
-      return {
-        fontWeight: '500',
-        color: '#013237',
-        borderRight: '1px solid #dde2eb',
-      };
+    cellStyle: {
+      fontWeight: '500',
+      color: '#013237',
+      borderRight: '1px solid #dde2eb',
     },
   });
 
+  // Добавление столбца "СООБЩЕНИЕ"
   columnDefs.push({
     headerName: 'СООБЩЕНИЕ',
     field: 'СООБЩЕНИЕ',
     colId: 'messageColumn',
-    // width: 150,
     pinned: 'right',
     hide: true,
     menuTabs: ['generalMenuTab'],
     autoHeight: true,
 
     cellRenderer: (params: ICellRendererParams) => {
-      const fio = params.data['ФИО']?.split('<')[0].trim();
+      const data = params.data as EmployeeData;
+      const fio = data['ФИО']?.split('<')[0].trim();
       const userSavedMessageDates: any = getUsersSavedMessagesDates();
-      let savedMessage, savedDate;
+      let savedMessage: string | undefined;
+      let savedDate: string | undefined;
 
-      if (userSavedMessageDates[fio]) {
+      if (fio && userSavedMessageDates[fio]) {
         savedMessage = Object.keys(userSavedMessageDates[fio])[0];
-        savedDate = Object.values(userSavedMessageDates[fio])[0];
+        savedDate = userSavedMessageDates[fio][savedMessage];
       }
       if (fio) {
         return (
@@ -166,17 +177,17 @@ export function getColumnDefs (
           />
         );
       }
+      return null;
     },
 
     cellStyle: {
       borderLeft: '1px solid #dde2eb',
     },
 
-
-    headerComponent: (params: any) => {
-      return <CustomHeaderRenderer {...params} api={params.api} />;
+    headerComponent: (params: IHeaderParams) => {
+      return <CustomHeaderRenderer {...params} columnApi={params.columnApi} />;
     },
   });
 
   return columnDefs;
-};
+}

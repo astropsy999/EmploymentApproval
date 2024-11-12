@@ -1,13 +1,16 @@
 {
     "compilerOptions": {
-      "target": "es5",
-      "module": "esnext",
+      "target": "es2015",
+      "module": "CommonJS",
       "jsx": "react",
       "strict": true,
       "esModuleInterop": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
       "lib": ["es2021"],
+      "paths": {
+      "date-fns": ["./node_modules/date-fns"]
+      },
     },
     "include": ["src"]
   }
