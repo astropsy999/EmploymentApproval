@@ -18,6 +18,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { getFioApproveIDsArr } from '../../helpers/getInfoOfSelectedUsers';
 import { useRange } from '../../store/dataStore';
+import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 
 interface SubmitEmploymentModalProps {
   gridApi: GridApi;
@@ -35,8 +36,6 @@ interface EmployeeData {
   [date: string]: string;
 }
 
-
-
 export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
   gridApi,
   handleAction,
@@ -44,10 +43,12 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
   loading,
 }: any) => {
   const { startDate, endDate } = useRange();
+   // Состояние для чекбоксов
+  const [checkedDates, setCheckedDates] = useState<{ [key: string]: boolean }>({});
 
   const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
 
-  const delIDiDDbArray = getFioApproveIDsArr(selectedRows);
+  const delIDiDDbArray = getFioApproveIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
 
   // Функция для получения массива дат между startDate и endDate
   const getDatesInRange = (start: Date, end: Date) => {
@@ -65,8 +66,7 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
 
-  // Состояние для чекбоксов
-  const [checkedDates, setCheckedDates] = useState<{ [key: string]: boolean }>({});
+ 
 
   useEffect(() => {
     // Инициализируем все даты как выбранные
@@ -90,7 +90,7 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
     const selectedDates = datesArray.filter((date) => checkedDates[date.toISOString()]);
     console.log("🚀 ~ handleConfirm ~ selectedDates:", selectedDates)
     // Преобразуем даты в нужный формат или выполняем необходимое действие
-    await handleAction('approve', delIDiDDbArray, selectedDates);
+    await handleAction('approve', delIDiDDbArray);
     handleCloseSubmit();
   };
 
