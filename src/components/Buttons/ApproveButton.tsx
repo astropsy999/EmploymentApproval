@@ -1,5 +1,6 @@
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import { Button } from '@mui/material';
+import React from 'react';
 
 export const ApproveButton = ({ handleOpenModalSubmit }) => {
   return (

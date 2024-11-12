@@ -1,5 +1,6 @@
 import LockIcon from '@mui/icons-material/Lock';
 import { Button } from '@mui/material';
+import React from 'react';
 
 export const LockButton = ({ handleOpenModalSubmitLocking }) => {
   return (

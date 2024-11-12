@@ -1,6 +1,6 @@
-export function shortenNames(names) {
+export function shortenNames(names: string[]) {
   // Создаем новый массив с сокращенными именами
-  const shortenedNames = names?.map((Name) => {
+  const shortenedNames = names?.map((Name: string) => {
     const splitName = Name?.trim()?.split(' ');
 
     const firstName = splitName[0];

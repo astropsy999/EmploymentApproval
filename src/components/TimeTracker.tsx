@@ -1,7 +1,3 @@
-import ruLocale from '@fullcalendar/core/locales/ru';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import FullCalendar from '@fullcalendar/react';
-import timeGridPlugin from '@fullcalendar/timegrid';
 import { Dialog, Modal, Stack } from '@mui/material';
 import { Box } from '@mui/system';
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
@@ -12,46 +8,45 @@ import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import '../assets/css/timetracker.css';
 import { AG_GRID_LOCALE_RU } from '../assets/translations/locale.ru';
 import {
+  getLinkedAllUsers,
   getUsersForManagers,
   linkUnlinkUser,
   multiApproveEmployment,
   multiLockEmloyment,
   multiUnlockEmloyment,
-  getLinkedAllUsers,
 } from '../data/api';
 import { HtmlRenderer } from '../data/trackerCols.data';
+import { calculateTotalRow } from '../helpers/calculateTotalRows';
+import { customLoader } from '../helpers/customLoader';
+import { DatePicker } from '../helpers/datePicker';
+import { extractNumbersFromValue } from '../helpers/extractNumbersFromValues';
+import { shortenNames } from '../helpers/shortenNames';
 import {
   useFilters,
   useGGridStore,
   useIDs,
   useRange,
 } from '../store/dataStore';
-import { shortenNames } from '../helpers/shortenNames';
-import { customLoader } from '../helpers/customLoader';
 
-import { DatePicker } from '../helpers/datePicker';
-import { calculateTotalRow } from '../helpers/calculateTotalRows';
-import { extractNumbersFromValue } from '../helpers/extractNumbersFromValues';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { deepSearchObject } from '../helpers/deepSearchInObject';
-import { SubmitEmploymentModal } from './Modals/SubmitEmploymentModal';
-import { SubmitEmploymentLockModal } from './Modals/SubmitEmploymentLockModal';
-import { SubmitEmploymentUnlockModal } from './Modals/SubmitEmploymentUnlockModal';
+
+import { addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
 import { ApproveButton } from './Buttons/ApproveButton';
 import { LockButton } from './Buttons/LockButton';
-import { UnlockButton } from './Buttons/UnlockButton';
 import { ReloadButton } from './Buttons/ReloadButton';
 import { ToggleMessages } from './Buttons/ToggleMessages';
-import { addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
+import { UnlockButton } from './Buttons/UnlockButton';
+import { SubmitEmploymentLockModal } from './Modals/SubmitEmploymentLockModal';
+import { SubmitEmploymentModal } from './Modals/SubmitEmploymentModal';
+import { SubmitEmploymentUnlockModal } from './Modals/SubmitEmploymentUnlockModal';
+
+import { VacationType } from '../types/enums';
 import CalendarComponent from './CalendarComponent';
-import DataGridComponent from './DataGridComponent';
-import { GridApi } from 'ag-grid-enterprise';
-import { EmployeeData } from '../types';
 
 const TimeTracker = memo(() => {
-  const gridRef = useRef();
+  const gridRef = useRef<AgGridReact<any>>(null);
   const {
     startDate,
     endDate,
@@ -240,9 +235,9 @@ const TimeTracker = memo(() => {
     rowSelection: 'multiple',
     alwaysShowHorizontalScroll: true,
     suppressAnimationFrame: true,
-    getRowHeight: function (params) {
+    getRowHeight: function (params: { data: any; }) {
       const hasEvents = 'objWrapper';
-      const hasVacation = 'Отпуск' || 'Больничный' || 'Выходной';
+      const hasVacation = VacationType.Vacation || VacationType.SickLeave || VacationType.Holiday;
 
       if (!deepSearchObject(params.data, hasEvents, hasVacation)) {
         return 50;

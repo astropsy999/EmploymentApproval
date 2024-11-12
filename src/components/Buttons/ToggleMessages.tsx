@@ -1,6 +1,7 @@
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { Button } from '@mui/material';
 import { useGGridStore, useRange } from '../../store/dataStore';
+import React from 'react';
 
 export const ToggleMessages = () => {
   const { isMessageColumnVisible, setMessageColumnVisible } = useRange();
