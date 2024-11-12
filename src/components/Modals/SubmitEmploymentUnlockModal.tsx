@@ -11,8 +11,17 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { transformDate } from '../../helpers/datesRanges';
 import { useRange } from '../../store/dataStore';
+import React from 'react';
+import { GridApi } from 'ag-grid-community';
 
-export const SubmitEmploymentUnlockModal = ({
+interface SubmitEmploymentUnlockModalProps {
+  gridApi: GridApi;
+  handleAction: (action: string, data: any) => Promise<void>;
+  handleCloseSubmitUnlock: () => void;
+  loading: boolean;
+}
+
+export const SubmitEmploymentUnlockModal: React.FC<SubmitEmploymentUnlockModalProps> = ({
   gridApi,
   handleAction,
   handleCloseSubmitUnlock,
@@ -35,16 +44,16 @@ export const SubmitEmploymentUnlockModal = ({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 600,
-    bgcolor: 'background.paper',
-    border: '1px solid lighttgray',
+    backgroundColor: 'background.paper',
+    border: '1px solid lightgray',
     borderRadius: '10px',
-    boxShadow: 24,
-    p: 4,
+    boxShadow: '0px 0px 24px rgba(0, 0, 0, 0.1)', 
+    padding: 4,
     height: '200px',
   };
 
   return (
-    <div sx={submitStyle}>
+    <div style={submitStyle as React.CSSProperties}>
       <DialogTitle
         sx={{
           mr: 5,
@@ -78,7 +87,7 @@ export const SubmitEmploymentUnlockModal = ({
             </Typography>
             <Typography gutterBottom fontSize={16} fontWeight={'bold'}>
               {unlockIDiDDbArray.map((fio, index, array) => (
-                <span key={Object.keys(fio)}>
+                <span key={Object.keys(fio)[0]}>
                   {Object.keys(fio)}
                   {index < array.length - 1 && ', '}
                 </span>
