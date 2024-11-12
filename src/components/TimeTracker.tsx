@@ -46,6 +46,9 @@ import { ReloadButton } from './Buttons/ReloadButton';
 import { ToggleMessages } from './Buttons/ToggleMessages';
 import { addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
 import CalendarComponent from './CalendarComponent';
+import DataGridComponent from './DataGridComponent';
+import { GridApi } from 'ag-grid-enterprise';
+import { EmployeeData } from '../types';
 
 const TimeTracker = memo(() => {
   const gridRef = useRef();

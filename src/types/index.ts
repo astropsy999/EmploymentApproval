@@ -1,4 +1,5 @@
 import { GridApi, ColumnApi } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
 
 /**
  * Интерфейс для данных сотрудника.
@@ -30,7 +31,7 @@ export interface CalendarComponentProps {
  * Интерфейс для пропсов компонента DataGridComponent.
  */
 export interface DataGridComponentProps {
-  gridApiRef: React.MutableRefObject<GridApi | null>;
+  gridApiRef: React.RefObject<AgGridReact<EmployeeData>>;
   rowData: EmployeeData[];
   columnDefs: any[]; // Определите более конкретный тип колонок, если возможно
   onGridReady: (params: { api: GridApi; columnApi: ColumnApi }) => void;
