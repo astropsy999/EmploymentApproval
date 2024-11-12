@@ -1,23 +1,22 @@
-import * as dr from '../helpers/datesRanges';
-import * as e from './endpoints';
 import ky from 'ky';
-import { customLoader } from '../helpers/customLoader';
-import { checkIcon } from '../helpers/checkIcon';
-import { useIDs } from '../store/dataStore';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { checkIcon } from '../helpers/checkIcon';
+import { customLoader } from '../helpers/customLoader';
+import * as dr from '../helpers/datesRanges';
+import * as e from './endpoints';
 
 /**
  * Получение пользователей прикрелпенных к руководителю.
  * @returns [] ФИО пользователей
  */
 
-let currFamName,
-  currName,
-  currSurname,
-  currIddb,
-  currManagerLevel,
-  currManagerFullName;
+let currFamName: string,
+  currName: string,
+  currSurname: string,
+  currIddb: string,
+  currManagerLevel: number,
+  currManagerFullName: string;
 const namesIddbObj = {};
 let namesDatesDayIDsObj = {};
 let lockedDates = {};

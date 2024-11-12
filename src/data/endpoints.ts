@@ -1,6 +1,5 @@
-import ky from 'ky';
 const srvURL = () => {
-  const mode = import.meta.env.MODE;
+  const mode = (import.meta as any).env.MODE;
 
   return mode === 'development' ? 'https://telegram.giapdc.ru:8443' : '';
 };

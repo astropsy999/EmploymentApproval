@@ -9,7 +9,19 @@ import {
 } from './api';
 import CustomHeaderRenderer from '../components/CustomHeaderRender';
 
-export const HtmlRenderer = ({ value }) => {
+import {
+  ColDef,
+  ValueFormatterParams,
+  ICellRendererParams,
+  IHeaderParams,
+} from 'ag-grid-community';
+import React from 'react';
+
+interface HtmlRendererProps {
+  value: string;
+}
+
+export const HtmlRenderer: React.FC<HtmlRendererProps> = ({ value }) => {
   return (
     <>
       <div dangerouslySetInnerHTML={{ __html: value }} />
@@ -19,35 +31,35 @@ export const HtmlRenderer = ({ value }) => {
 
 export default HtmlRenderer;
 
-function CustomHeaderButton(props) {
-  const handleButtonClick = () => {
-    // Обработчик события при нажатии на кнопку
-    alert('Кнопка в шапке меню нажата!');
-  };
+// function CustomHeaderButton(props) {
+//   const handleButtonClick = () => {
+//     // Обработчик события при нажатии на кнопку
+//     alert('Кнопка в шапке меню нажата!');
+//   };
 
-  return (
-    <button onClick={handleButtonClick} className="custom-header-button">
-      Моя кнопка
-    </button>
-  );
-}
+//   return (
+//     <button onClick={handleButtonClick} className="custom-header-button">
+//       Моя кнопка
+//     </button>
+//   );
+// }
 
-export const getColumnDefs = (
-  start = weekDatesDefault()[0],
-  end = weekDatesDefault()[1],
-) => {
+export function getColumnDefs (
+  start: Date = weekDatesDefault()[0],
+  end: Date = weekDatesDefault()[1],
+)  {
   const columnDefs = [];
 
-  let interval = [];
+  let interval: Date[] = [];
   if (start && end) {
     interval = eachDayOfInterval({ start, end });
   }
 
-  function stripHtmlTags(input) {
+  function stripHtmlTags(input: string | null | undefined) {
     return input?.replace(/<[^>]*>/g, '');
   }
 
-  const noHTMLValueFormatter = (params) => {
+  const noHTMLValueFormatter = (params: ValueFormatterParams) => {
     const stripHtml = params.value;
 
     return stripHtmlTags(stripHtml);
@@ -85,28 +97,18 @@ export const getColumnDefs = (
       filter: false,
       menuTabs: [],
       cellRenderer: 'htmlRenderer',
-      cellStyle: (params) => {
+      cellStyle: (params: ICellRendererParams): { [key: string]: string | number } => {
         const fio = params.data['ФИО']?.split('<')[0].trim();
         const lockedDates = getLockedDatesData();
         const approvedDates = getApprovedDates();
 
-        function isDayLocked() {
-          if (lockedDates[fio]?.length > 0) {
-            return true;
-          }
-
-          return false;
+        function isDayLocked(): boolean {
+          return fio && lockedDates[fio]?.length > 0;
         }
-        function isDayApproved() {
-          const date = format(item, 'dd/MM/yyyy').replaceAll('/', '.');
-
-          const dateExists = approvedDates[fio]?.some((obj) => date in obj);
-
-          if (approvedDates[fio]?.length > 0 && dateExists) {
-            return true;
-          }
-
-          return false;
+        function isDayApproved(): boolean {
+          const date = format(item, 'dd/MM/yyyy').replace(/\//g, '.');
+          const dateExists = approvedDates[fio]?.some((obj: any) => date in obj);
+          return fio && approvedDates[fio]?.length > 0 && dateExists;
         }
 
         if (isDayLocked()) {
@@ -138,7 +140,7 @@ export const getColumnDefs = (
     pinned: 'right',
     width: 80,
 
-    cellStyle: function (params) {
+    cellStyle: function (params: IHeaderParams) {
       return {
         fontWeight: '500',
         color: '#013237',
@@ -157,7 +159,7 @@ export const getColumnDefs = (
     menuTabs: ['generalMenuTab'],
     autoHeight: true,
 
-    cellRenderer: (params) => {
+    cellRenderer: (params: ICellRendererParams) => {
       const fio = params.data['ФИО']?.split('<')[0].trim();
       const userSavedMessageDates = getUsersSavedMessagesDates();
       let savedMessage, savedDate;
@@ -180,7 +182,7 @@ export const getColumnDefs = (
     cellStyle: {
       borderLeft: '1px solid #dde2eb',
     },
-    headerComponent: (params) => {
+    headerComponent: (params: IHeaderParams) => {
       return <CustomHeaderRenderer {...params} api={params.api} />;
     },
   });

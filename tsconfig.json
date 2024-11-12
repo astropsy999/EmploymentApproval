@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
       "target": "es5",
-      "module": "commonjs",
+      "module": "esnext",
       "jsx": "react",
       "strict": true,
       "esModuleInterop": true,
       "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true
+      "forceConsistentCasingInFileNames": true,
+      "lib": ["es2021"],
     },
     "include": ["src"]
   }
