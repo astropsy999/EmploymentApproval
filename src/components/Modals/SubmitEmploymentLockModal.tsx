@@ -24,9 +24,45 @@ import {
   multiLockEmloyment,
   getUsersForManagers,
 } from '../../data/api';
+import React from 'react';
+import { GridApi } from 'ag-grid-community';
 import { customLoader } from '../../helpers/customLoader';
 
-export const SubmitEmploymentLockModal = ({
+
+/**
+ * Интерфейс для данных сотрудника.
+ */
+interface EmployeeData {
+  "ФИО": string;
+  [date: string]: string;
+}
+
+/**
+ * Интерфейс для массива данных с ФИО и соответствующими ID.
+ */
+interface FioIdsArray {
+  [fio: string]: string[];
+}
+
+/**
+ * Интерфейс для пропсов компонента SubmitEmploymentLockModal.
+ */
+interface SubmitEmploymentLockModalProps {
+  gridApi: GridApi;
+  handleCloseSubmitLock: () => void;
+  handleAction: (
+    actionType: 'approve' | 'lock' | 'unlock',
+    dataArray: FioIdsArray[]
+  ) => Promise<void>;
+  hasUnsubmitted: boolean;
+  toastSuccess: (message: string) => void;
+  toastError: (message: string) => void;
+  updateStateOfNewData: (rowData: any) => void; // Замените `any` на конкретный тип данных, если возможно
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+}
+
+export const SubmitEmploymentLockModal: React.FC<SubmitEmploymentLockModalProps> = ({
   gridApi,
   handleCloseSubmitLock,
   handleAction,
@@ -105,7 +141,7 @@ export const SubmitEmploymentLockModal = ({
             </Typography>
             <Typography gutterBottom fontSize={16} fontWeight={'bold'}>
               {lockIDiDDbArray.map((fio, index, array) => (
-                <span key={Object.keys(fio)}>
+                <span key={Object.keys(fio)[0]}>
                   {Object.keys(fio)}
                   {index < array.length - 1 && ', '}
                 </span>
@@ -128,11 +164,12 @@ export const SubmitEmploymentLockModal = ({
               {(popupState) => (
                 <>
                   <LoadingButton
-                    onClick={handleConfirm}
                     loading={loading}
                     variant="contained"
                     color="success"
                     size="large"
+                    //@ts-ignore
+                    onClick={handleConfirm}
                     {...bindTrigger(popupState)}
                   >
                     Да
