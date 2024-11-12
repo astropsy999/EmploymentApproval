@@ -2,7 +2,6 @@ export type SelectedData = {[ФИО: string]: string; }[]
 export type PreparedData = { [key: string]: string[] }[]
 
 export const getFioApproveIDsArr = (selected: SelectedData): PreparedData => {
-  console.log("🚀 ~ getFioApproveIDsArr ~ selected:", selected)
   const fioApproveIDsArr: PreparedData = [];
 
   selected.forEach((obj) => {

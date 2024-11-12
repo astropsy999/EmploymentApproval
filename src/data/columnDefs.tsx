@@ -40,8 +40,6 @@ export function getColumnDefs (
   start: Date = weekDatesDefault()[0],
   end: Date = weekDatesDefault()[1],
 ): ColDef[] {
-  console.log('Imported locale ru in columnDefs.ts:', ru);
-
   const columnDefs: ColDef[] = [];
 
   let interval: Date[] = [];

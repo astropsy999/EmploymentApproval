@@ -45,6 +45,7 @@ import { UnlockButton } from './Buttons/UnlockButton';
 import { ReloadButton } from './Buttons/ReloadButton';
 import { ToggleMessages } from './Buttons/ToggleMessages';
 import { addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
+import CalendarComponent from './CalendarComponent';
 
 const TimeTracker = memo(() => {
   const gridRef = useRef();
@@ -522,36 +523,36 @@ const TimeTracker = memo(() => {
     height: '85%',
   };
 
-  const fullCalendar = (
-    <Box sx={style}>
-      <FullCalendar
-        height={'100%'}
-        headerToolbar={{
-          left: 'title',
-          center: '',
-          right: '',
-        }}
-        eventColor="#cee2f2"
-        eventClassNames="event"
-        plugins={[dayGridPlugin, timeGridPlugin]}
-        initialView="timeGridDay"
-        events={eventsObj}
-        initialDate={selectedDate}
-        locale={ruLocale}
-        allDaySlot={false}
-        slotDuration="00:15:00"
-        slotMinTime={slotMinTime}
-        slotMaxTime={slotMaxTime}
-        scrollTime={slotMinTime}
-        eventContent={eventContent}
-        slotEventOverlap={false}
-        eventTimeFormat={eventTimeFormat}
-        slotLabelInterval={'00:30'}
-        slotLabelFormat={slotLabelFormat}
-        eventDisplay={'list-item'}
-      />
-    </Box>
-  );
+  // const fullCalendar = (
+  //   <Box sx={style}>
+  //     <FullCalendar
+  //       height={'100%'}
+  //       headerToolbar={{
+  //         left: 'title',
+  //         center: '',
+  //         right: '',
+  //       }}
+  //       eventColor="#cee2f2"
+  //       eventClassNames="event"
+  //       plugins={[dayGridPlugin, timeGridPlugin]}
+  //       initialView="timeGridDay"
+  //       events={eventsObj}
+  //       initialDate={selectedDate}
+  //       locale={ruLocale}
+  //       allDaySlot={false}
+  //       slotDuration="00:15:00"
+  //       slotMinTime={slotMinTime}
+  //       slotMaxTime={slotMaxTime}
+  //       scrollTime={slotMinTime}
+  //       eventContent={eventContent}
+  //       slotEventOverlap={false}
+  //       eventTimeFormat={eventTimeFormat}
+  //       slotLabelInterval={'00:30'}
+  //       slotLabelFormat={slotLabelFormat}
+  //       eventDisplay={'list-item'}
+  //     />
+  //   </Box>
+  // );
 
   const handleCloseSubmit = () => {
     setOpenSubmit(false);
@@ -646,7 +647,13 @@ const TimeTracker = memo(() => {
   return (
     <>
       <Modal open={open} onClose={handleCloseModal}>
-        {fullCalendar}
+        <CalendarComponent
+          events={eventsObj}
+          selectedDate={selectedDate}
+          slotMinTime={slotMinTime}
+          slotMaxTime={slotMaxTime}
+          eventContent={eventContent}
+        />
       </Modal>
 
       <Dialog onClose={handleCloseSubmit} open={openSubmit} maxWidth="md">
