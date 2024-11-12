@@ -1,5 +1,9 @@
-export const getFioApproveIDsArr = (selected) => {
-  const fioApproveIDsArr = [];
+export type SelectedData = {[ФИО: string]: string; }[]
+export type PreparedData = { [key: string]: string[] }[]
+
+export const getFioApproveIDsArr = (selected: SelectedData): PreparedData => {
+  console.log("🚀 ~ getFioApproveIDsArr ~ selected:", selected)
+  const fioApproveIDsArr: PreparedData = [];
 
   selected.forEach((obj) => {
     let fio = '';
@@ -26,8 +30,8 @@ export const getFioApproveIDsArr = (selected) => {
   return fioApproveIDsArr;
 };
 
-export const getFioLockIDsArr = (selected) => {
-  const fioLockIDsArr = [];
+export const getFioLockIDsArr = (selected: SelectedData):PreparedData  => {
+  const fioLockIDsArr: { [key: string]: string[] }[] = [];
 
   selected.forEach((obj) => {
     let fio = '';
@@ -44,8 +48,8 @@ export const getFioLockIDsArr = (selected) => {
 
   return fioLockIDsArr;
 };
-export const getFioUnlockIDsArr = (selected) => {
-  const fioUnlockIDsArr = [];
+export const getFioUnlockIDsArr = (selected: SelectedData) => {
+  const fioUnlockIDsArr: PreparedData = [];
 
   selected.forEach((obj) => {
     let fio = '';

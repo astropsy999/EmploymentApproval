@@ -5,6 +5,7 @@ import { checkIcon } from '../helpers/checkIcon';
 import { customLoader } from '../helpers/customLoader';
 import * as dr from '../helpers/datesRanges';
 import * as e from './endpoints';
+import { PreparedData } from '../helpers/getInfoOfSelectedUsers';
 
 /**
  * Получение пользователей прикрелпенных к руководителю.
@@ -282,16 +283,16 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
 
   // customLoader(false);
 
-  let tableDataArr = [];
-  const namesArray = [];
+  let tableDataArr: { ФИО: string; }[] = [];
+  const namesArray: any[] = [];
 
   const res = UsersForManagersRes.data;
-  const setArr = (arr) => {
+  const setArr = (arr: any[] | Iterable<unknown> | null | undefined) => {
     return [...new Set(arr)];
   };
 
   // Собираем ФИО, iDDb, dayIDs, isBlocked
-  res.map((item) => {
+  res.map((item: { ObjID: any; }[]) => {
     const name = item[2].Value;
     const date = item[7].Value;
     const id = item[7].ObjID;
@@ -327,10 +328,10 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
     }
 
     // Проверяем, есть ли уже объект с такой датой
-    const hasBlockedDate = lockedDates[name].find((entry) =>
+    const hasBlockedDate = lockedDates[name].find((entry: { hasOwnProperty: (arg0: any) => any; }) =>
       entry.hasOwnProperty(date),
     );
-    const hasApprovedDate = approvedDates[name].find((entry) =>
+    const hasApprovedDate = approvedDates[name].find((entry: { hasOwnProperty: (arg0: any) => any; }) =>
       entry.hasOwnProperty(date),
     );
 
@@ -343,7 +344,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
     }
 
     // Проверяем, есть ли уже объект с такой датой
-    const existingEntry = namesDatesDayIDsObj[name].find((entry) =>
+    const existingEntry = namesDatesDayIDsObj[name].find((entry: { hasOwnProperty: (arg0: any) => any; }) =>
       entry.hasOwnProperty(date),
     );
 
@@ -359,22 +360,22 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
   const namesArr = setArr(namesArray);
 
   let dateObj = {};
-  let objectsArray = [];
-  let typesArray = [];
-  let divsArray = [];
-  let taskSubtypeArr = [];
+  let objectsArray: Iterable<any> | null | undefined = [];
+  let typesArray: Iterable<any> | null | undefined = [];
+  let divsArray: Iterable<any> | null | undefined = [];
+  let taskSubtypeArr: Iterable<any> | null | undefined = [];
   let eventsDataFioObj = {};
 
   // На основе собранных уникальных ФИО выгребаем данные для каждого человека на каждую дату и собираем для отрисовки в таблице
   namesArr.map((name) => {
-    const nameArray = res.filter((item) => item[2].Value === name);
+    const nameArray = res.filter((item: { Value: unknown; }[]) => item[2].Value === name);
     let division;
     let position;
     let redDivision;
 
     let total = 0;
 
-    nameArray.map((nameA) => {
+    nameArray.map((nameA: { Value: any; }[]) => {
       const date = nameA[7].Value;
       const object = nameA[13].Value;
       const time = nameA[17].Value;
@@ -401,7 +402,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
       const isBlocked = nameA[33].Value;
       const dayID = nameA[7].ObjID;
 
-      const toFullcalFormat = (erpdate) => {
+      const toFullcalFormat = (erpdate: string) => {
         //01.06.2018 11','30 => 2018-06-01T11','30','00
         // Разбиваем строку даты на отдельные части
         const parts = erpdate.split(' ');
@@ -540,22 +541,22 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
     });
 
     // [{},{},{}] => ''
-    const transformMethArr = (methArr) => {
+    const transformMethArr = (methArr: any[]) => {
       let finData = `<div class="methsWrapper">`;
       let totalDayTime = 0;
       let globTime;
       let isVacation = false;
-      const isObjecSelected = (objectSelected) => {
+      const isObjecSelected = (objectSelected: any) => {
         if (objectSelected) {
           return `<span class="eventObject">${objectSelected}</span>`;
         } else {
           return '';
         }
       };
-      let currObjIDArr = [];
+      let currObjIDArr: { [x: number]: any; }[] = [];
       let fullEventsWithMets = {};
       let objStrMeth = '';
-      methArr.map((obj) => {
+      methArr.map((obj: { title: string; meth: any; objID: any; dayID: any; time: any; location: any; object: any; type: any; subType: any; isApproved: any; globTime: any; employment: string; }) => {
         const onVacation =
           obj.title === 'Отпуск' ||
           obj.title === 'Больничный' ||
@@ -604,10 +605,10 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
       if (currObjIDArr.length !== 0) {
         let objStrWithMeths = '';
 
-        const generateEventsWithMethods = (arr) => {
+        const generateEventsWithMethods = (arr: any[]) => {
           const methodDataMap = {};
 
-          arr.forEach((item) => {
+          arr.forEach((item: { [x: string]: any; hasOwnProperty: (arg0: string) => any; }) => {
             for (const method in item) {
               if (item.hasOwnProperty(method)) {
                 if (!methodDataMap[method]) {
@@ -621,7 +622,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
           for (let methodEv in methodDataMap) {
             if (methodDataMap.hasOwnProperty(methodEv)) {
               const resultObject = methodDataMap[methodEv].reduce(
-                (acc, obj) => {
+                (acc: { [x: string]: any; meth: any[]; methObj: any[]; methZones: any[]; time: any[]; hasOwnProperty: (arg0: string) => any; }, obj: { [x: string]: any; meth: any; methObj: any; methZones: any; time: any; }) => {
                   const { meth, methObj, methZones, time, ...rest } = obj;
 
                   if (!acc.meth) {
@@ -651,10 +652,10 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
                 {},
               );
 
-              const methodsView = (meth, methObj, methZones, methTime) => {
+              const methodsView = (meth: any[], methObj: { [x: string]: any; }, methZones: { [x: string]: any; }, methTime: { [x: string]: any; }) => {
                 let metViewObj = ''; // ВО-1ч(об-1,зон-3)
 
-                meth.map((item, i) => {
+                meth.map((item: any, i: string | number) => {
                   const methName = item;
                   const time = methTime[i];
                   const obj = methObj[i];
@@ -701,7 +702,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
       return finData;
     };
 
-    const transformArrToDataObj = (arrobj) => {
+    const transformArrToDataObj = (arrobj: { [x: string]: any; }) => {
       let dayStrObj = {};
       // {data','[{},{},{}]} => {data','''}
       for (let key in arrobj) {
@@ -715,7 +716,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
     };
     dateObj;
 
-    function isUserForbidden(username) {
+    function isUserForbidden(username: unknown) {
       // Проверяем, существует ли пользователь в объекте
       if (managersLevels.hasOwnProperty(username)) {
         // Получаем уровень доступа для данного пользователя
@@ -757,11 +758,11 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
 
   // Фильтруем результирующий объект и массив с пользователями в соответствии с выбранными руководителем пользователями
 
-  function filterObjectAndArrayByNames(namesArray, dataObject, dataArray) {
+  function filterObjectAndArrayByNames(namesArray: any[], dataObject: { [x: string]: any; hasOwnProperty?: any; }, dataArray: any[]) {
     const filteredObject = {};
-    const filteredArray = [];
+    const filteredArray: any[] = [];
 
-    namesArray.forEach((fullName) => {
+    namesArray.forEach((fullName: string) => {
       const trimmedFullName = fullName.trim();
       const nameParts = trimmedFullName.split(' ');
 
@@ -777,7 +778,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
         }
 
         filteredArray.push(
-          dataArray.filter((str) => str['ФИО'].includes(key))[0],
+          dataArray.filter((str: { [x: string]: string | string[]; }) => str['ФИО'].includes(key))[0],
         );
       }
     });
@@ -981,7 +982,7 @@ export const getInitialTypeSubtypesData = async () => {
   const typeSubtypesData = typesSubtypesRes.data;
   let typesSubtypesBase = {};
 
-  typeSubtypesData.map((tsbt) => {
+  typeSubtypesData.map((tsbt: { Value: any; }[]) => {
     const type = tsbt[2].Value;
     const subType = tsbt[5].Value;
 
@@ -1072,9 +1073,9 @@ export const getDataForLinkedUsersFilter = async () => {
     })
     .json();
 
-  const dataLinkedUserFilterView = [];
+  const dataLinkedUserFilterView: string[] = [];
 
-  dataLinkedUserFilter.data.forEach((user) => {
+  dataLinkedUserFilter.data.forEach((user: { Value: any; }[]) => {
     const surName = user[2].Value;
     const initials = `${user[3].Value.slice(0, 1)}.${user[4].Value.slice(
       0,
@@ -1095,13 +1096,13 @@ export const getDataForLinkedUsersFilter = async () => {
  * Функция для сохранения/удаления прикрепленных к руководителю сотрудников
  */
 
-export const linkUnlinkUser = async (filteredUsers) => {
-  function generateIdString(namesArray, namesIddbObj) {
+export const linkUnlinkUser = async (filteredUsers: any) => {
+  function generateIdString(namesArray: any[], namesIddbObj: { [x: string]: any; }) {
     // Создаем массив ID на основе фамилий
-    const idArray = namesArray.map((name) => namesIddbObj[name] || '');
+    const idArray = namesArray.map((name: string | number) => namesIddbObj[name] || '');
 
     // Фильтруем массив ID, убирая пустые значения
-    const filteredIdArray = idArray.filter((id) => id !== '');
+    const filteredIdArray = idArray.filter((id: string) => id !== '');
 
     // Создаем строку, перечисляя ID через пробел
     const idString = filteredIdArray.join('\n');
@@ -1177,13 +1178,13 @@ export const linkUnlinkUser = async (filteredUsers) => {
  * Функция для массового согласования занятости сотрудников
  */
 
-export const multiApproveEmployment = async (delIDiDDbArr) => {
+export const multiApproveEmployment = async (delIDiDDbArr: any[]) => {
   const managerName = Object.keys(namesIddbObj).find(
     (key) => namesIddbObj[key] === currIddb,
   );
 
   try {
-    const requests = delIDiDDbArr.map(async (user) => {
+    const requests = delIDiDDbArr.map(async (user: { [s: string]: unknown; } | ArrayLike<unknown>) => {
       const userIDDb = namesIddbObj[Object.keys(user)[0]];
       const userEmplValues = Object.values(user)[0].join(';');
 
@@ -1231,17 +1232,18 @@ export const multiApproveEmployment = async (delIDiDDbArr) => {
  * Массовая блокировка занятости выбранных сотрудников
  */
 
-export const multiLockEmloyment = async (lockIDiDDbArray) => {
+export const multiLockEmloyment = async (lockIDiDDbArray: PreparedData): Promise<any> => {
+
   const managerName = Object.keys(namesIddbObj).find(
     (key) => namesIddbObj[key] === currIddb,
   );
 
   try {
-    const requests = lockIDiDDbArray.map(async (user) => {
+    const requests = lockIDiDDbArray.map(async (user: {}) => {
       const userIDDb = namesIddbObj[Object.keys(user)[0]];
       const userDayIDsArr = namesDatesDayIDsObj[Object.keys(user)[0]];
       const getUserLockValues = () => {
-        return userDayIDsArr.map((day) => Object.values(day)[0]).join(';');
+        return userDayIDsArr.map((day: { [s: string]: unknown; } | ArrayLike<unknown>) => Object.values(day)[0]).join(';');
       };
 
       const userLockValues = getUserLockValues();
@@ -1292,13 +1294,13 @@ export const multiLockEmloyment = async (lockIDiDDbArray) => {
  * Массовая разблокировка занятости выбранных сотрудников
  */
 
-export const multiUnlockEmloyment = async (unlockIDiDDbArray) => {
+export const multiUnlockEmloyment = async (unlockIDiDDbArray: any[]) => {
   try {
-    const requests = unlockIDiDDbArray.map(async (user) => {
+    const requests = unlockIDiDDbArray.map(async (user: {}) => {
       const userIDDb = namesIddbObj[Object.keys(user)[0]];
       const userDayIDsArr = namesDatesDayIDsObj[Object.keys(user)[0]];
       const getUserUnlockValues = () => {
-        return userDayIDsArr.map((day) => Object.values(day)[0]).join(';');
+        return userDayIDsArr.map((day: { [s: string]: unknown; } | ArrayLike<unknown>) => Object.values(day)[0]).join(';');
       };
 
       const userUnlockValues = getUserUnlockValues();
@@ -1358,7 +1360,7 @@ export const getManagersLevels = () => {
  * Отправка сообщения пользователю
  */
 
-export const sendMessageToUser = async (message, dayId, date, fio) => {
+export const sendMessageToUser = async (message: string | Blob, dayId: unknown, date: string | Blob | null, fio: any) => {
   let sendDataFD = new FormData();
 
   // Первый запрос

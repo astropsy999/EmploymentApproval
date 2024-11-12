@@ -76,7 +76,6 @@ export const SubmitEmploymentLockModal: React.FC<SubmitEmploymentLockModalProps>
 }) => {
   const { startDate, endDate } = useRange();
   const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
-  console.log("🚀 ~ selectedRows:", selectedRows)
 
   const [checkedDates, setCheckedDates] = React.useState<{ [key: string]: boolean }>({});
 
