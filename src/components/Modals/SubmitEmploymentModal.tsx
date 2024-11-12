@@ -1,34 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import {
-  DialogTitle,
-  IconButton,
-  DialogContent,
-  DialogActions,
-  Button,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import {
+  Button,
+  Checkbox,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+} from '@mui/material';
+import Typography from '@mui/material/Typography';
+import React, { useEffect, useState } from 'react';
 // import { transformDate } from '../../helpers/datesRanges';
-import { useRange } from '../../store/dataStore';
-import { getFioApproveIDsArr } from '../../helpers/getInfoOfSelectedUsers';
+import { GridApi } from 'ag-grid-community';
 import { format } from 'date-fns';
-import ruLocale from 'date-fns/locale/ru';
+import { ru } from 'date-fns/locale';
+import { getFioApproveIDsArr } from '../../helpers/getInfoOfSelectedUsers';
+import { useRange } from '../../store/dataStore';
 
-export const SubmitEmploymentModal = ({
+interface SubmitEmploymentModalProps {
+  gridApi: GridApi;
+  handleAction: (
+    actionType: string,
+    dataArray: any[],
+    selectedDates: Date[]
+  ) => Promise<void>;
+  handleCloseSubmit: () => void;
+  loading: boolean;
+}
+
+interface EmployeeData {
+  "ФИО": string;
+  [date: string]: string;
+}
+
+
+
+export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
   gridApi,
   handleAction,
   handleCloseSubmit,
   loading,
 }: any) => {
   const { startDate, endDate } = useRange();
-  console.log("🚀 ~ endDate:", endDate)
-  console.log("🚀 ~ startDate:", startDate)
 
-  const selectedRows = gridApi.getSelectedRows();
+  const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
 
   const delIDiDDbArray = getFioApproveIDsArr(selectedRows);
 
@@ -125,7 +142,7 @@ export const SubmitEmploymentModal = ({
               {datesArray.map((date) => {
                 const dateKey = date.toISOString();
                 // Используем двухбуквенные сокращения дней недели
-                const dayOfWeek = format(date, 'EEEEEE', { locale: ruLocale });
+                const dayOfWeek = format(date, 'EEEEEE', { locale: ru });
                 const dayAndMonth = format(date, 'dd');
                 return (
                   <FormControlLabel

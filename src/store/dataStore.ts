@@ -2,8 +2,9 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { getColumnDefs } from '../data/trackerCols.data';
 import { weekDatesDefault } from '../helpers/datesRanges';
+import { FiltersState, GGridStoreState, IDsState, RangeState } from './dataStore.types';
 
-export const useRange = create(
+export const useRange = create<RangeState>()(
   devtools((set) => ({
     startDate: weekDatesDefault()[0],
     endDate: weekDatesDefault()[1],
@@ -53,13 +54,13 @@ export const useRange = create(
   })),
 );
 
-export const useGGridStore = create((set) => ({
+export const useGGridStore = create<GGridStoreState>()((set, get) => ({
   ggridRef: null,
   setGGridRef: (ref) => set({ ggridRef: ref }),
-  getGGridRef: () => ggridRef,
+  getGGridRef: () => get().ggridRef,
 }));
 
-export const useFilters = create(
+export const useFilters = create<FiltersState>()(
   devtools((set) => ({
     linkedAndFilteredUsers: [],
     setLinkedAndFilteredUsers: (newLinkedAndFilteredUsers) =>
@@ -67,7 +68,7 @@ export const useFilters = create(
   })),
 );
 
-export const useIDs = create(
+export const useIDs = create<IDsState>()(
   devtools((set) => ({
     namesIddbObj: {},
     setNamesIddbObj: (newNamesIddbObj) =>
