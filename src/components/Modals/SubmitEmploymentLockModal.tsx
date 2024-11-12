@@ -14,7 +14,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { transformDate } from '../../helpers/datesRanges';
+import { getDatesInRange, transformDate } from '../../helpers/datesRanges';
 import { useRange } from '../../store/dataStore';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import Popover from '@mui/material/Popover';
@@ -27,6 +27,8 @@ import {
 import React from 'react';
 import { GridApi } from 'ag-grid-community';
 import { customLoader } from '../../helpers/customLoader';
+import DateCheckboxGroup from '../DateCheckboxGroup';
+import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 
 
 /**
@@ -73,10 +75,35 @@ export const SubmitEmploymentLockModal: React.FC<SubmitEmploymentLockModalProps>
   setLoading,
 }) => {
   const { startDate, endDate } = useRange();
-  const selectedRows = gridApi.getSelectedRows();
+  const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
+  console.log("🚀 ~ selectedRows:", selectedRows)
 
-  const lockIDiDDbArray = getFioLockIDsArr(selectedRows);
-  const delIDiDDbArray = getFioApproveIDsArr(selectedRows);
+  const [checkedDates, setCheckedDates] = React.useState<{ [key: string]: boolean }>({});
+
+  const lockIDiDDbArray = getFioLockIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
+  console.log("🚀 ~ lockIDiDDbArray:", lockIDiDDbArray)
+  const delIDiDDbArray = getFioApproveIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
+  console.log("🚀 ~ delIDiDDbArray:", delIDiDDbArray)
+
+  // Получаем массив дат за неделю
+  const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
+
+  useEffect(() => {
+    // Инициализируем все даты как выбранные
+    const initialChecked: { [key: string]: boolean } = {};
+    datesArray.forEach((date) => {
+      const key = date.toISOString();
+      initialChecked[key] = true;
+    });
+    setCheckedDates(initialChecked);
+  }, [startDate, endDate]);
+
+  const handleCheckboxChange = (dateKey: string) => {
+    setCheckedDates((prev) => ({
+      ...prev,
+      [dateKey]: !prev[dateKey],
+    }));
+  };
 
   const handleConfirm = async () => {
     await handleAction('lock', lockIDiDDbArray);
@@ -147,10 +174,11 @@ export const SubmitEmploymentLockModal: React.FC<SubmitEmploymentLockModalProps>
                 </span>
               ))}
             </Typography>
-            <Typography gutterBottom fontSize={18} color={'#2d79e6'}>
-              в период с <b>{transformDate(startDate)}</b> по{' '}
-              <b>{transformDate(endDate)}</b>?
-            </Typography>
+              <DateCheckboxGroup
+                dates={datesArray}
+                checkedDates={checkedDates}
+                onChange={handleCheckboxChange}
+              />
           </>
         ) : (
           'Необходимо выбрать сотрудников для блокировки'

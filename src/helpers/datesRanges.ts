@@ -108,3 +108,17 @@ export function formatDateToDDMMYYYY(date: Date): string {
   const year = date.getFullYear();
   return `${day}.${month}.${year}`;
 }
+
+
+  // Функция для получения массива дат между startDate и endDate
+  export const getDatesInRange = (start: Date, end: Date) => {
+    const date = new Date(start);
+    const dates = [];
+
+    while (date <= end) {
+      dates.push(new Date(date));
+      date.setDate(date.getDate() + 1);
+    }
+
+    return dates;
+  };

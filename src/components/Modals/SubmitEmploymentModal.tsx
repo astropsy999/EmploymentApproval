@@ -2,24 +2,20 @@ import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Button,
-  Checkbox,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
-  FormGroup,
-  IconButton,
+  IconButton
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 // import { transformDate } from '../../helpers/datesRanges';
 import { GridApi } from 'ag-grid-community';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 import { getFioApproveIDsArr } from '../../helpers/getInfoOfSelectedUsers';
 import { useRange } from '../../store/dataStore';
-import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 import DateCheckboxGroup from '../DateCheckboxGroup';
+import { getDatesInRange } from '../../helpers/datesRanges';
 
 interface SubmitEmploymentModalProps {
   gridApi: GridApi;
@@ -44,30 +40,16 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
   loading,
 }: any) => {
   const { startDate, endDate } = useRange();
-   // Состояние для чекбоксов
   const [checkedDates, setCheckedDates] = useState<{ [key: string]: boolean }>({});
 
   const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
 
   const delIDiDDbArray = getFioApproveIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
 
-  // Функция для получения массива дат между startDate и endDate
-  const getDatesInRange = (start: Date, end: Date) => {
-    const date = new Date(start);
-    const dates = [];
 
-    while (date <= end) {
-      dates.push(new Date(date));
-      date.setDate(date.getDate() + 1);
-    }
-
-    return dates;
-  };
 
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
-
- 
 
   useEffect(() => {
     // Инициализируем все даты как выбранные
@@ -88,9 +70,7 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
 
   const handleConfirm = async () => {
     // Фильтруем выбранные даты
-    const selectedDates = datesArray.filter((date) => checkedDates[date.toISOString()]);
-    console.log("🚀 ~ handleConfirm ~ selectedDates:", selectedDates)
-    // Преобразуем даты в нужный формат или выполняем необходимое действие
+    // const selectedDates = datesArray.filter((date) => checkedDates[date.toISOString()]);
     await handleAction('approve', delIDiDDbArray);
     handleCloseSubmit();
   };
