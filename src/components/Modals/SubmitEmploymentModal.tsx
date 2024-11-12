@@ -19,6 +19,7 @@ import { ru } from 'date-fns/locale';
 import { getFioApproveIDsArr } from '../../helpers/getInfoOfSelectedUsers';
 import { useRange } from '../../store/dataStore';
 import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
+import DateCheckboxGroup from '../DateCheckboxGroup';
 
 interface SubmitEmploymentModalProps {
   gridApi: GridApi;
@@ -138,37 +139,11 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
             <Typography gutterBottom fontSize={18}>
               Выберите дни для согласования:
             </Typography>
-            <FormGroup row sx={{ display: 'flex', flexWrap: 'wrap' }}>
-              {datesArray.map((date) => {
-                const dateKey = date.toISOString();
-                // Используем двухбуквенные сокращения дней недели
-                const dayOfWeek = format(date, 'EEEEEE', { locale: ru });
-                const dayAndMonth = format(date, 'dd');
-                return (
-                  <FormControlLabel
-                    key={dateKey}
-                    control={
-                      <Checkbox
-                        checked={checkedDates[dateKey] || false}
-                        onChange={() => handleCheckboxChange(dateKey)}
-                        sx={{
-                          paddingRight: '1px',
-                        }}
-                      />
-                    }
-                    label={`${dayOfWeek} ${dayAndMonth}`}
-                    sx={{
-                      marginRight: 1, // Уменьшаем отступ между чекбоксами
-                      '.MuiFormControlLabel-label': {
-                        fontSize: '0.85rem', // Уменьшаем размер шрифта, если нужно
-                        marginLeft: '4px', // Уменьшаем отступ между чекбоксом и текстом
-                      },
-                      marginLeft: 0,
-                    }}
-                  />
-                );
-              })}
-            </FormGroup>
+            <DateCheckboxGroup
+              dates={datesArray}
+              checkedDates={checkedDates}
+              onChange={handleCheckboxChange}
+            />
           </>
         ) : (
           'Необходимо выбрать сотрудников для согласования'
