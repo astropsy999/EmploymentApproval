@@ -44,6 +44,8 @@ import { SubmitEmploymentUnlockModal } from './Modals/SubmitEmploymentUnlockModa
 
 import { VacationType } from '../types/enums';
 import CalendarComponent from './CalendarComponent';
+import { ColDef } from 'ag-grid-enterprise';
+import { FirstDataRenderedEvent } from 'ag-grid-community';
 
 const TimeTracker = memo(() => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -87,19 +89,21 @@ const TimeTracker = memo(() => {
   const [loading, setLoading] = useState(false);
   const [hasUnsubmitted, setHasUmsubmitted] = useState(true);
 
-  const onGridColumnsChanged = (columnDefs) => {
+  const onGridColumnsChanged = (columnDefs: ColDef[]) => {
     const totalColumnDef = columnDefs?.find(
       (colDef) => colDef.field === '\u03A3',
     );
 
-    totalColumnDef.valueGetter = function (params) {
-      let total = 0;
-      Object.values(params.data).forEach((val) => {
-        const numbers = extractNumbersFromValue(val);
-        total += numbers.reduce((sum, current) => sum + current, 0);
-      });
-      return total;
-    };
+    if (totalColumnDef) {
+      totalColumnDef.valueGetter = function (params) {
+          let total = 0;
+          Object.values(params.data).forEach((val) => {
+              const numbers = extractNumbersFromValue(val);
+              total += numbers.reduce((sum, current) => sum + current, 0);
+          });
+          return total;
+      };
+  }
   };
 
   const [components] = useState({
@@ -108,10 +112,10 @@ const TimeTracker = memo(() => {
 
   // Обработчик события firstDataRendered
 
-  async function onFirstDataRendered(params) {
+  async function onFirstDataRendered(params: FirstDataRenderedEvent) {
     const columnApi = params.columnApi;
 
-    columnApi?.autoSizeColumns();
+    columnApi?.autoSizeColumns(columnApi.getColumns()!);
     const columnState = columnApi.getColumnState();
 
     const gridApi = params.api;
