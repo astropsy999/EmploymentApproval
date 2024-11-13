@@ -102,7 +102,9 @@ export function getColumnDefs (
         const approvedDates: ApprovedDatesData = getApprovedDates();
 
         function isDayLocked(): boolean {
-          return lockedDates[fio]?.length > 0;
+          const date = format(item, 'dd/MM/yyyy', { locale: ru }).replace(/\//g, '.');
+          const dateExists = lockedDates[fio]?.some((obj: any) => date in obj);
+          return lockedDates[fio]?.length > 0 && dateExists;
         }
 
         function isDayApproved(): boolean {
