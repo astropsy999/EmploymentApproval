@@ -16,7 +16,7 @@ import { getFioApproveIDsArr } from '../../helpers/getInfoOfSelectedUsers';
 import { useRange } from '../../store/dataStore';
 import { EmployeeData } from '../../types';
 import DateCheckboxGroup from '../DateCheckboxGroup';
-import ModalHeader from '../ModalHeader';
+import ModalHeader from './ModalHeader';
 
 interface SubmitEmploymentModalProps {
   gridApi: GridApi;

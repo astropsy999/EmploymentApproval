@@ -29,22 +29,10 @@ import { GridApi } from 'ag-grid-community';
 import { customLoader } from '../../helpers/customLoader';
 import DateCheckboxGroup from '../DateCheckboxGroup';
 import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
+import { EmployeeData, FioIdsArray } from '../../types';
+import ModalHeader from './ModalHeader';
 
 
-/**
- * Интерфейс для данных сотрудника.
- */
-interface EmployeeData {
-  "ФИО": string;
-  [date: string]: string;
-}
-
-/**
- * Интерфейс для массива данных с ФИО и соответствующими ID.
- */
-interface FioIdsArray {
-  [fio: string]: string[];
-}
 
 /**
  * Интерфейс для пропсов компонента SubmitEmploymentLockModal.
@@ -59,7 +47,7 @@ interface LockEmploymentModalProps {
   hasUnsubmitted: boolean;
   toastSuccess: (message: string) => void;
   toastError: (message: string) => void;
-  updateStateOfNewData: (rowData: any) => void; // Замените `any` на конкретный тип данных, если возможно
+  updateStateOfNewData: (rowData: any) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }
@@ -140,31 +128,10 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
 
   return (
     <div>
-      <DialogTitle
-        sx={{
-          mr: 5,
-          p: 2,
-          fontSize: 20,
-          fontWeight: 'bold',
-          color: '#ed6d02',
-        }}
-      >
         {lockIDiDDbArray.length > 0
-          ? 'Массовая блокировка занятости'
-          : 'Выберите сотрудников!'}
-      </DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={handleCloseSubmitLock}
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
+          ? (<ModalHeader title="Массовая блокировка занятости" onClose={handleCloseSubmitLock} color="#ed6d02" />)
+          : (<ModalHeader title="Выберите сотрудников" onClose={handleCloseSubmitLock} color="#ed6d02" />)
+          }
       <DialogContent dividers sx={{ fontSize: 18, maxWidth: 'sm' }}>
         {lockIDiDDbArray.length > 0 ? (
           <>
