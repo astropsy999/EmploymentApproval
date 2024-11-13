@@ -3,7 +3,7 @@
 import React from 'react';
 import { DialogTitle, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ModalHeaderProps } from '../types';
+import { ModalHeaderProps } from '../../types';
 
 
 /**

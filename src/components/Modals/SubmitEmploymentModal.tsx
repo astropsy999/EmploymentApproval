@@ -17,6 +17,7 @@ import { useRange } from '../../store/dataStore';
 import { EmployeeData } from '../../types';
 import DateCheckboxGroup from '../DateCheckboxGroup';
 import ModalHeader from './ModalHeader';
+import SelectedEmployeesList from './SelectedEmployeesList';
 
 interface SubmitEmploymentModalProps {
   gridApi: GridApi;
@@ -87,19 +88,7 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
       <DialogContent dividers sx={{ fontSize: 18, maxWidth: 'md' }}>
         {delIDiDDbArray.length > 0 ? (
           <>
-            <Typography gutterBottom fontSize={18}>
-              Вы хотите согласовать занятость сотрудникам:
-            </Typography>
-            <Typography gutterBottom fontSize={16} fontWeight={'bold'}>
-              {delIDiDDbArray.map(
-                (fio: {}, index: number, array: string | any[]) => (
-                  <span key={Object.keys(fio)[0]}>
-                    {Object.keys(fio)}
-                    {index < array.length - 1 && ', '}
-                  </span>
-                ),
-              )}
-            </Typography>
+            <SelectedEmployeesList title={'Вы хотите согласовать занятость сотрудникам'} employees={delIDiDDbArray} />
             <Typography gutterBottom fontSize={18}>
               Выберите дни для согласования:
             </Typography>

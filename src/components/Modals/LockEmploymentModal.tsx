@@ -1,36 +1,33 @@
+import LoadingButton from '@mui/lab/LoadingButton';
+import {
+  Button,
+  Container,
+  DialogActions,
+  DialogContent,
+  Stack
+} from '@mui/material';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import { GridApi } from 'ag-grid-community';
+import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
+import React, { useEffect } from 'react';
+import {
+  getUsersForManagers,
+  multiApproveEmployment,
+  multiLockEmloyment,
+} from '../../data/api';
+import { customLoader } from '../../helpers/customLoader';
+import { getDatesInRange } from '../../helpers/datesRanges';
+import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 import {
   getFioApproveIDsArr,
   getFioLockIDsArr,
 } from '../../helpers/getInfoOfSelectedUsers';
-import {
-  DialogTitle,
-  IconButton,
-  DialogContent,
-  DialogActions,
-  Button,
-  Container,
-  Stack,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import { getDatesInRange, transformDate } from '../../helpers/datesRanges';
 import { useRange } from '../../store/dataStore';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import Popover from '@mui/material/Popover';
-import { useEffect } from 'react';
-import {
-  multiApproveEmployment,
-  multiLockEmloyment,
-  getUsersForManagers,
-} from '../../data/api';
-import React from 'react';
-import { GridApi } from 'ag-grid-community';
-import { customLoader } from '../../helpers/customLoader';
-import DateCheckboxGroup from '../DateCheckboxGroup';
-import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 import { EmployeeData, FioIdsArray } from '../../types';
+import DateCheckboxGroup from '../DateCheckboxGroup';
 import ModalHeader from './ModalHeader';
+import SelectedEmployeesList from './SelectedEmployeesList';
 
 
 
@@ -72,11 +69,9 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
   const lockIDiDDbArray = getFioLockIDsArr(
     filterSelectedRowsByDates(selectedRows, checkedDates),
   );
-  console.log('🚀 ~ lockIDiDDbArray:', lockIDiDDbArray);
   const delIDiDDbArray = getFioApproveIDsArr(
     filterSelectedRowsByDates(selectedRows, checkedDates),
   );
-  console.log('🚀 ~ delIDiDDbArray:', delIDiDDbArray);
 
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
@@ -135,17 +130,7 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
       <DialogContent dividers sx={{ fontSize: 18, maxWidth: 'sm' }}>
         {lockIDiDDbArray.length > 0 ? (
           <>
-            <Typography gutterBottom fontSize={18}>
-              Вы хотите заблокировать занятость сотрудникам:
-            </Typography>
-            <Typography gutterBottom fontSize={16} fontWeight={'bold'}>
-              {lockIDiDDbArray.map((fio, index, array) => (
-                <span key={Object.keys(fio)[0]}>
-                  {Object.keys(fio)}
-                  {index < array.length - 1 && ', '}
-                </span>
-              ))}
-            </Typography>
+            <SelectedEmployeesList title="Вы хотите заблокировать занятость сотрудникам" employees={lockIDiDDbArray} />
             <DateCheckboxGroup
               dates={datesArray}
               checkedDates={checkedDates}
