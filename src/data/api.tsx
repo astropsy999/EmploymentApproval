@@ -6,6 +6,9 @@ import { customLoader } from '../helpers/customLoader';
 import * as dr from '../helpers/datesRanges';
 import * as e from './endpoints';
 import { PreparedData } from '../helpers/getInfoOfSelectedUsers';
+import { filterDataByDates } from '../helpers/filterDataByDateForLocking';
+
+
 
 /**
  * Получение пользователей прикрелпенных к руководителю.
@@ -18,8 +21,8 @@ let currFamName: string,
   currIddb: string,
   currManagerLevel: number,
   currManagerFullName: string;
-const namesIddbObj = {};
-let namesDatesDayIDsObj = {};
+const namesIddbObj: Record<string, number> = {};
+let namesDatesDayIDsObj: Record<string, { [date: string]: number; }> = {};
 let lockedDates = {};
 let approvedDates = {};
 const managersLevels = {};
@@ -1233,22 +1236,27 @@ export const multiApproveEmployment = async (delIDiDDbArr: any[]) => {
  */
 
 export const multiLockEmloyment = async (lockIDiDDbArray: PreparedData): Promise<any> => {
-
+    console.log("🚀 ~ multiLockEmloyment ~ lockIDiDDbArray:", lockIDiDDbArray)
+    
   const managerName = Object.keys(namesIddbObj).find(
-    (key) => namesIddbObj[key] === currIddb,
+    (key) => namesIddbObj[key] === Number(currIddb),
   );
+  console.log("🚀 ~ requests ~ namesDatesDayIDsObj:", namesDatesDayIDsObj)
 
   try {
     const requests = lockIDiDDbArray.map(async (user: {}) => {
       const userIDDb = namesIddbObj[Object.keys(user)[0]];
       const userDayIDsArr = namesDatesDayIDsObj[Object.keys(user)[0]];
+      console.log("🚀 ~ requests ~ userDayIDsArr:", userDayIDsArr)
       const getUserLockValues = () => {
         return userDayIDsArr.map((day: { [s: string]: unknown; } | ArrayLike<unknown>) => Object.values(day)[0]).join(';');
       };
 
-      const userLockValues = getUserLockValues();
+      const selectedDates = Object.values(lockIDiDDbArray[0])[0]
+      console.log("🚀 ~ requests ~ selectedDates:", selectedDates)
 
-      // return;
+      const userLockValues = filterDataByDates(selectedDates, userDayIDsArr).map(obj => Object.values(obj)[0]).join(';');
+      console.log("🚀 ~ requests ~ userLockValues:", userLockValues)
 
       let formDataMultiLock = new FormData();
 

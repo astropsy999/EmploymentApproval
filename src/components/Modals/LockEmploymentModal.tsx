@@ -55,6 +55,7 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
   loading,
   setLoading,
 }) => {
+  console.log("🚀 ~ hasUnsubmitted:", hasUnsubmitted)
   const { startDate, endDate } = useRange();
   const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
 
@@ -71,6 +72,8 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
 
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
+
+  
 
   useEffect(() => {
     // Инициализируем все даты как выбранные

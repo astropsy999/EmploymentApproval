@@ -609,8 +609,10 @@ const TimeTracker = memo(() => {
     const selectedUsersHaveEvents = 'objWrapper';
     const approved = 'approved';
 
-    const haveEvents = selectedUsers.some((user) =>
-      deepSearchObject(user, selectedUsersHaveEvents, approved),
+    const haveEvents = selectedUsers.filter((user) =>
+      {
+        return deepSearchObject(user, selectedUsersHaveEvents, approved)
+      },
     );
 
     setHasUmsubmitted(haveEvents);

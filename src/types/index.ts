@@ -26,6 +26,13 @@ export interface ModalHeaderProps {
 }
 
 /**
+ * Интерфейс для данных сотрудника.
+ */
+export interface DateIdMap {
+  [date: string]: number;
+}
+
+/**
  * Интерфейс для пропсов компонента CalendarComponent.
  */
 export interface CalendarComponentProps {
