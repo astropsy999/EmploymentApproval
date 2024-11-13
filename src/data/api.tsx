@@ -7,6 +7,7 @@ import * as dr from '../helpers/datesRanges';
 import * as e from './endpoints';
 import { PreparedData } from '../helpers/getInfoOfSelectedUsers';
 import { filterDataByDates } from '../helpers/filterDataByDateForLocking';
+import { DateIdMap } from '../types';
 
 
 
@@ -22,7 +23,7 @@ let currFamName: string,
   currManagerLevel: number,
   currManagerFullName: string;
 const namesIddbObj: Record<string, number> = {};
-let namesDatesDayIDsObj: Record<string, { [date: string]: number; }> = {};
+let namesDatesDayIDsObj: Record<string, DateIdMap[]> = {};
 let lockedDates = {};
 let approvedDates = {};
 const managersLevels = {};
@@ -1284,12 +1285,13 @@ export const multiLockEmloyment = async (lockIDiDDbArray: PreparedData): Promise
   } catch (error) {
     console.error('Во время массовой блокировки произошла ошибка', error);
     toast.error('Во время массовой блокировки произошла ошибка', {
-      position: toast.POSITION.TOP_RIGHT, // Местоположение сообщения
+      position: toast.POSITION.TOP_RIGHT, 
       autoClose: 3000,
       theme: 'colored',
     });
   }
 };
+
 /**
  * Массовая разблокировка занятости выбранных сотрудников
  */

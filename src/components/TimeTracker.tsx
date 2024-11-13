@@ -87,7 +87,7 @@ const TimeTracker = memo(() => {
   const [slotMinTime, setSlotMinTime] = useState('07:00:00');
   const [slotMaxTime, setSlotMaxTime] = useState('22:00:00');
   const [loading, setLoading] = useState(false);
-  const [hasUnsubmitted, setHasUmsubmitted] = useState(true);
+  // const [hasUnsubmitted, setHasUmsubmitted] = useState(true);
 
   const onGridColumnsChanged = (columnDefs: ColDef[]) => {
     const totalColumnDef = columnDefs?.find(
@@ -604,18 +604,8 @@ const TimeTracker = memo(() => {
   };
 
   const onRowSelected = () => {
-    const selectedUsers = ggridRef.getSelectedRows();
+    // const selectedUsers = ggridRef.getSelectedRows();
 
-    const selectedUsersHaveEvents = 'objWrapper';
-    const approved = 'approved';
-
-    const haveEvents = selectedUsers.filter((user) =>
-      {
-        return deepSearchObject(user, selectedUsersHaveEvents, approved)
-      },
-    );
-
-    setHasUmsubmitted(haveEvents);
   };
 
   return (
@@ -644,7 +634,7 @@ const TimeTracker = memo(() => {
           gridApi={gridApiRef.current}
           handleAction={handleAction}
           handleCloseSubmitLock={handleCloseSubmitLock}
-          hasUnsubmitted={hasUnsubmitted}
+          // hasUnsubmitted={hasUnsubmitted}
           toastSuccess={toastSuccess}
           updateStateOfNewData={updateStateOfNewData}
           loading={loading}

@@ -41,7 +41,7 @@ export const SubmitBeforeLockPopover = (props: SubmitBeforeLockPopoverProps) => 
                   >
                     <Container maxWidth="xs">
                       <Typography variant="h5" mt={2}>
-                        Вы хотите заблокировать неделю сотрудникам, но у
+                        Вы хотите заблокировать выбранные даты сотрудникам, но у
                         некоторых внесена фактическая занятость.
                         <br />
                         <b>Согласуете перед блокировкой?</b>

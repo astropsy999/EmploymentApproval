@@ -5,7 +5,7 @@ import {
   DialogContent
 } from '@mui/material';
 import { GridApi } from 'ag-grid-community';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   getUsersForManagers,
   multiApproveEmployment,
@@ -24,6 +24,7 @@ import DateCheckboxGroup from '../DateCheckboxGroup';
 import ModalHeader from './ModalHeader';
 import SelectedEmployeesList from './SelectedEmployeesList';
 import { SubmitBeforeLockPopover } from './SubmitBeforeLockPopover';
+import { deepSearchObject } from '../../helpers/deepSearchInObject';
 
 
 
@@ -49,19 +50,20 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
   gridApi,
   handleCloseSubmitLock,
   handleAction,
-  hasUnsubmitted,
+  // hasUnsubmitted,
   toastSuccess,
   updateStateOfNewData,
   loading,
   setLoading,
 }) => {
-  console.log("🚀 ~ hasUnsubmitted:", hasUnsubmitted)
   const { startDate, endDate } = useRange();
   const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
 
   const [checkedDates, setCheckedDates] = React.useState<{
     [key: string]: boolean;
   }>({});
+
+  const [hasUnsubmitted, setHasUnsubmitted] = useState<boolean>(false);
 
   const lockIDiDDbArray = getFioLockIDsArr(
     filterSelectedRowsByDates(selectedRows, checkedDates),
@@ -84,6 +86,32 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
     });
     setCheckedDates(initialChecked);
   }, [startDate, endDate]);
+
+  useEffect(() => {
+    // Проверяем наличие несогласованных задач
+    const checkUnsubmitted = () => {
+      // Выбираем только те даты, которые отмечены чекбоксами
+      const selectedDateKeys = datesArray
+        .filter(date => checkedDates[date.toISOString()])
+        .map(date => formatDateToKey(date));
+
+      // Проверяем каждый выбранный пользователь на наличие несогласованных задач
+      const unsubmitted = selectedRows.some(user => {
+        return deepSearchObject(user, 'objWrapper', 'approved', selectedDateKeys);
+      });
+
+      setHasUnsubmitted(unsubmitted);
+    };
+
+    checkUnsubmitted();
+  }, [selectedRows, checkedDates, datesArray]);
+
+  const formatDateToKey = (date: Date): string => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const handleCheckboxChange = (dateKey: string) => {
     setCheckedDates((prev) => ({
