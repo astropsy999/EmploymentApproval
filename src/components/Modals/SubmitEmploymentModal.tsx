@@ -9,13 +9,14 @@ import {
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
-// import { transformDate } from '../../helpers/datesRanges';
 import { GridApi } from 'ag-grid-community';
+import { getDatesInRange } from '../../helpers/datesRanges';
 import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 import { getFioApproveIDsArr } from '../../helpers/getInfoOfSelectedUsers';
 import { useRange } from '../../store/dataStore';
+import { EmployeeData } from '../../types';
 import DateCheckboxGroup from '../DateCheckboxGroup';
-import { getDatesInRange } from '../../helpers/datesRanges';
+import ModalHeader from '../ModalHeader';
 
 interface SubmitEmploymentModalProps {
   gridApi: GridApi;
@@ -26,11 +27,6 @@ interface SubmitEmploymentModalProps {
   ) => Promise<void>;
   handleCloseSubmit: () => void;
   loading: boolean;
-}
-
-interface EmployeeData {
-  "ФИО": string;
-  [date: string]: string;
 }
 
 export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
@@ -45,8 +41,6 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
   const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
 
   const delIDiDDbArray = getFioApproveIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
-
-
 
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
@@ -77,31 +71,19 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
 
   return (
     <div>
-      <DialogTitle
-        sx={{
-          mr: 5,
-          p: 2,
-          fontSize: 20,
-          fontWeight: 'bold',
-          color: '#2E7D31',
-        }}
-      >
-        {delIDiDDbArray.length > 0
-          ? 'Массовое согласование занятости'
-          : 'Выберите сотрудников!'}
-      </DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={handleCloseSubmit}
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
+      {delIDiDDbArray.length > 0 ? (
+        <ModalHeader
+          title={'Массовое согласование занятости'}
+          onClose={handleCloseSubmit}
+          color={'#2E7D31'}
+        />
+      ): (
+        <ModalHeader
+          title={'Выберите сотрудников!'}
+          onClose={handleCloseSubmit}
+          color={'#2E7D31'}
+        />
+      )}
       <DialogContent dividers sx={{ fontSize: 18, maxWidth: 'md' }}>
         {delIDiDDbArray.length > 0 ? (
           <>
@@ -109,12 +91,14 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
               Вы хотите согласовать занятость сотрудникам:
             </Typography>
             <Typography gutterBottom fontSize={16} fontWeight={'bold'}>
-              {delIDiDDbArray.map((fio: {}, index: number, array: string | any[]) => (
-                <span key={Object.keys(fio)[0]}>
-                  {Object.keys(fio)}
-                  {index < array.length - 1 && ', '}
-                </span>
-              ))}
+              {delIDiDDbArray.map(
+                (fio: {}, index: number, array: string | any[]) => (
+                  <span key={Object.keys(fio)[0]}>
+                    {Object.keys(fio)}
+                    {index < array.length - 1 && ', '}
+                  </span>
+                ),
+              )}
             </Typography>
             <Typography gutterBottom fontSize={18}>
               Выберите дни для согласования:

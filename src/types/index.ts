@@ -17,6 +17,15 @@ export interface FioIdsArray {
 }
 
 /**
+ * Интерфейс для пропсов компонента ModalHeader.
+ */
+export interface ModalHeaderProps {
+  title: string;
+  onClose: () => void;
+  color: string;
+}
+
+/**
  * Интерфейс для пропсов компонента CalendarComponent.
  */
 export interface CalendarComponentProps {
