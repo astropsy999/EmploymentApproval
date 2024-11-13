@@ -38,7 +38,7 @@ import { LockButton } from './Buttons/LockButton';
 import { ReloadButton } from './Buttons/ReloadButton';
 import { ToggleMessages } from './Buttons/ToggleMessages';
 import { UnlockButton } from './Buttons/UnlockButton';
-import { SubmitEmploymentLockModal } from './Modals/SubmitEmploymentLockModal';
+import { LockEmploymentModal } from './Modals/LockEmploymentModal';
 import { SubmitEmploymentModal } from './Modals/SubmitEmploymentModal';
 import { SubmitEmploymentUnlockModal } from './Modals/SubmitEmploymentUnlockModal';
 
@@ -525,36 +525,6 @@ const TimeTracker = memo(() => {
     height: '85%',
   };
 
-  // const fullCalendar = (
-  //   <Box sx={style}>
-  //     <FullCalendar
-  //       height={'100%'}
-  //       headerToolbar={{
-  //         left: 'title',
-  //         center: '',
-  //         right: '',
-  //       }}
-  //       eventColor="#cee2f2"
-  //       eventClassNames="event"
-  //       plugins={[dayGridPlugin, timeGridPlugin]}
-  //       initialView="timeGridDay"
-  //       events={eventsObj}
-  //       initialDate={selectedDate}
-  //       locale={ruLocale}
-  //       allDaySlot={false}
-  //       slotDuration="00:15:00"
-  //       slotMinTime={slotMinTime}
-  //       slotMaxTime={slotMaxTime}
-  //       scrollTime={slotMinTime}
-  //       eventContent={eventContent}
-  //       slotEventOverlap={false}
-  //       eventTimeFormat={eventTimeFormat}
-  //       slotLabelInterval={'00:30'}
-  //       slotLabelFormat={slotLabelFormat}
-  //       eventDisplay={'list-item'}
-  //     />
-  //   </Box>
-  // );
 
   const handleCloseSubmit = () => {
     setOpenSubmit(false);
@@ -668,7 +638,7 @@ const TimeTracker = memo(() => {
       </Dialog>
 
       <Dialog onClose={handleCloseSubmitLock} open={openSubmitLock}>
-        <SubmitEmploymentLockModal
+        <LockEmploymentModal
           gridApi={gridApiRef.current}
           handleAction={handleAction}
           handleCloseSubmitLock={handleCloseSubmitLock}

@@ -49,7 +49,7 @@ interface FioIdsArray {
 /**
  * Интерфейс для пропсов компонента SubmitEmploymentLockModal.
  */
-interface SubmitEmploymentLockModalProps {
+interface LockEmploymentModalProps {
   gridApi: GridApi;
   handleCloseSubmitLock: () => void;
   handleAction: (
@@ -64,7 +64,7 @@ interface SubmitEmploymentLockModalProps {
   setLoading: (loading: boolean) => void;
 }
 
-export const SubmitEmploymentLockModal: React.FC<SubmitEmploymentLockModalProps> = ({
+export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
   gridApi,
   handleCloseSubmitLock,
   handleAction,
@@ -77,12 +77,18 @@ export const SubmitEmploymentLockModal: React.FC<SubmitEmploymentLockModalProps>
   const { startDate, endDate } = useRange();
   const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
 
-  const [checkedDates, setCheckedDates] = React.useState<{ [key: string]: boolean }>({});
+  const [checkedDates, setCheckedDates] = React.useState<{
+    [key: string]: boolean;
+  }>({});
 
-  const lockIDiDDbArray = getFioLockIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
-  console.log("🚀 ~ lockIDiDDbArray:", lockIDiDDbArray)
-  const delIDiDDbArray = getFioApproveIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
-  console.log("🚀 ~ delIDiDDbArray:", delIDiDDbArray)
+  const lockIDiDDbArray = getFioLockIDsArr(
+    filterSelectedRowsByDates(selectedRows, checkedDates),
+  );
+  console.log('🚀 ~ lockIDiDDbArray:', lockIDiDDbArray);
+  const delIDiDDbArray = getFioApproveIDsArr(
+    filterSelectedRowsByDates(selectedRows, checkedDates),
+  );
+  console.log('🚀 ~ delIDiDDbArray:', delIDiDDbArray);
 
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
@@ -173,11 +179,11 @@ export const SubmitEmploymentLockModal: React.FC<SubmitEmploymentLockModalProps>
                 </span>
               ))}
             </Typography>
-              <DateCheckboxGroup
-                dates={datesArray}
-                checkedDates={checkedDates}
-                onChange={handleCheckboxChange}
-              />
+            <DateCheckboxGroup
+              dates={datesArray}
+              checkedDates={checkedDates}
+              onChange={handleCheckboxChange}
+            />
           </>
         ) : (
           'Необходимо выбрать сотрудников для блокировки'
