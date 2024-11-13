@@ -1,15 +1,10 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Button,
-  Container,
   DialogActions,
-  DialogContent,
-  Stack
+  DialogContent
 } from '@mui/material';
-import Popover from '@mui/material/Popover';
-import Typography from '@mui/material/Typography';
 import { GridApi } from 'ag-grid-community';
-import PopupState, { bindPopover, bindTrigger } from 'material-ui-popup-state';
 import React, { useEffect } from 'react';
 import {
   getUsersForManagers,
@@ -28,6 +23,7 @@ import { EmployeeData, FioIdsArray } from '../../types';
 import DateCheckboxGroup from '../DateCheckboxGroup';
 import ModalHeader from './ModalHeader';
 import SelectedEmployeesList from './SelectedEmployeesList';
+import { SubmitBeforeLockPopover } from './SubmitBeforeLockPopover';
 
 
 
@@ -145,72 +141,12 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
       {lockIDiDDbArray.length > 0 && (
         <DialogActions>
           {hasUnsubmitted ? (
-            <PopupState variant="popover">
-              {(popupState) => (
-                <>
-                  <LoadingButton
-                    loading={loading}
-                    variant="contained"
-                    color="success"
-                    size="large"
-                    //@ts-ignore
-                    onClick={handleConfirm}
-                    {...bindTrigger(popupState)}
-                  >
-                    Да
-                  </LoadingButton>
-                  <Popover
-                    {...bindPopover(popupState)}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'center',
-                    }}
-                  >
-                    <Container maxWidth="xs">
-                      <Typography variant="h5" mt={2}>
-                        Вы хотите заблокировать неделю сотрудникам, но у
-                        некоторых внесена фактическая занятость.
-                        <br />
-                        <b>Согласуете перед блокировкой?</b>
-                      </Typography>
-                      <Stack direction={'row'} spacing={1} sx={{ p: 2, m: 1 }}>
-                        <LoadingButton
-                          onClick={handleConfirmSubmitLock}
-                          loading={loading}
-                          variant="contained"
-                          color="success"
-                          size="large"
-                        >
-                          Да
-                        </LoadingButton>
-                        <LoadingButton
-                          onClick={handleConfirm}
-                          loading={loading}
-                          variant="contained"
-                          color="success"
-                          size="large"
-                        >
-                          Нет
-                        </LoadingButton>
-                        <Button
-                          autoFocus
-                          onClick={handleCloseSubmitLock}
-                          variant="contained"
-                          color="error"
-                          size="large"
-                        >
-                          Отмена
-                        </Button>
-                      </Stack>
-                    </Container>
-                  </Popover>
-                </>
-              )}
-            </PopupState>
+            <SubmitBeforeLockPopover
+              loading={loading}
+              handleConfirm={handleConfirm}
+              handleConfirmSubmitLock={handleConfirmSubmitLock}
+              handleCloseSubmitLock={handleCloseSubmitLock}
+            />
           ) : (
             <LoadingButton
               onClick={handleConfirm}
