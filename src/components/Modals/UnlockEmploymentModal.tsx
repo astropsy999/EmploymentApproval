@@ -1,18 +1,18 @@
-import { getFioUnlockIDsArr } from '../../helpers/getInfoOfSelectedUsers';
-import {
-  DialogTitle,
-  IconButton,
-  DialogContent,
-  DialogActions,
-  Button,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { transformDate } from '../../helpers/datesRanges';
-import { useRange } from '../../store/dataStore';
-import React from 'react';
+import {
+  Button,
+  DialogActions,
+  DialogContent
+} from '@mui/material';
 import { GridApi } from 'ag-grid-community';
+import React, { useEffect } from 'react';
+import { getDatesInRange } from '../../helpers/datesRanges';
+import { getFioUnlockIDsArr } from '../../helpers/getInfoOfSelectedUsers';
+import { useRange } from '../../store/dataStore';
+import DateCheckboxGroup from '../DateCheckboxGroup';
+import ModalHeader from './ModalHeader';
+import SelectedEmployeesList from './SelectedEmployeesList';
+import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 
 interface UnlockEmploymentModalProps {
   gridApi: GridApi;
@@ -28,10 +28,34 @@ export const UnlockEmploymentModal: React.FC<UnlockEmploymentModalProps> = ({
   loading,
 }) => {
   const { startDate, endDate } = useRange();
+  const [checkedDates, setCheckedDates] = React.useState<{
+    [key: string]: boolean;
+  }>({});
 
   const selectedRows = gridApi.getSelectedRows();
 
-  const unlockIDiDDbArray = getFioUnlockIDsArr(selectedRows);
+  const unlockIDiDDbArray = getFioUnlockIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
+  console.log("🚀 ~ unlockIDiDDbArray:", unlockIDiDDbArray)
+
+  // Получаем массив дат за неделю
+  const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
+
+  const handleCheckboxChange = (dateKey: string) => {
+    setCheckedDates((prev) => ({
+      ...prev,
+      [dateKey]: !prev[dateKey],
+    }));
+  };
+
+  useEffect(() => {
+    // Инициализируем все даты как выбранные
+    const initialChecked: { [key: string]: boolean } = {};
+    datesArray.forEach((date) => {
+      const key = date.toISOString();
+      initialChecked[key] = true;
+    });
+    setCheckedDates(initialChecked);
+  }, [startDate, endDate]);
 
   const handleConfirm = async () => {
     await handleAction('unlock', unlockIDiDDbArray);
@@ -53,50 +77,26 @@ export const UnlockEmploymentModal: React.FC<UnlockEmploymentModalProps> = ({
   };
 
   return (
-    <div style={submitStyle as React.CSSProperties}>
-      <DialogTitle
-        sx={{
-          mr: 5,
-          p: 2,
-          fontSize: 20,
-          fontWeight: 'bold',
-          color: '#0088D1',
-        }}
-      >
+    //@ts-ignore
+    <div sx={submitStyle}>
+ 
         {unlockIDiDDbArray.length > 0
-          ? 'Массовая разблокировка занятости'
-          : 'Выберите сотрудников!'}
-      </DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={handleCloseSubmitUnlock}
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
+          ? <ModalHeader title="Массовая разблокировка занятости" onClose={handleCloseSubmitUnlock} color="#2d79e6" />
+          : <ModalHeader title="Выберите сотрудников!" onClose={handleCloseSubmitUnlock} color="red" />
+          }
+      
       <DialogContent dividers sx={{ fontSize: 18, maxWidth: 'sm' }}>
         {unlockIDiDDbArray.length > 0 ? (
           <>
-            <Typography gutterBottom fontSize={18}>
-              Вы хотите разблокировать занятость сотрудникам:
-            </Typography>
-            <Typography gutterBottom fontSize={16} fontWeight={'bold'}>
-              {unlockIDiDDbArray.map((fio, index, array) => (
-                <span key={Object.keys(fio)[0]}>
-                  {Object.keys(fio)}
-                  {index < array.length - 1 && ', '}
-                </span>
-              ))}
-            </Typography>
-            <Typography gutterBottom fontSize={18} color={'#2d79e6'}>
-              в период с <b>{transformDate(startDate)}</b> по{' '}
-              <b>{transformDate(endDate)}</b>?
-            </Typography>
+            <SelectedEmployeesList
+              title="Вы хотите разблокировать занятость сотрудникам"
+              employees={unlockIDiDDbArray}
+            />
+            <DateCheckboxGroup
+              dates={datesArray}
+              checkedDates={checkedDates}
+              onChange={handleCheckboxChange}
+            />
           </>
         ) : (
           'Необходимо выбрать сотрудников для разблокировки'
