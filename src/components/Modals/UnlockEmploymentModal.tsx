@@ -14,14 +14,14 @@ import { useRange } from '../../store/dataStore';
 import React from 'react';
 import { GridApi } from 'ag-grid-community';
 
-interface SubmitEmploymentUnlockModalProps {
+interface UnlockEmploymentModalProps {
   gridApi: GridApi;
   handleAction: (action: string, data: any) => Promise<void>;
   handleCloseSubmitUnlock: () => void;
   loading: boolean;
 }
 
-export const SubmitEmploymentUnlockModal: React.FC<SubmitEmploymentUnlockModalProps> = ({
+export const UnlockEmploymentModal: React.FC<UnlockEmploymentModalProps> = ({
   gridApi,
   handleAction,
   handleCloseSubmitUnlock,
@@ -47,7 +47,7 @@ export const SubmitEmploymentUnlockModal: React.FC<SubmitEmploymentUnlockModalPr
     backgroundColor: 'background.paper',
     border: '1px solid lightgray',
     borderRadius: '10px',
-    boxShadow: '0px 0px 24px rgba(0, 0, 0, 0.1)', 
+    boxShadow: '0px 0px 24px rgba(0, 0, 0, 0.1)',
     padding: 4,
     height: '200px',
   };

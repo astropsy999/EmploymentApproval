@@ -40,7 +40,7 @@ import { ToggleMessages } from './Buttons/ToggleMessages';
 import { UnlockButton } from './Buttons/UnlockButton';
 import { LockEmploymentModal } from './Modals/LockEmploymentModal';
 import { SubmitEmploymentModal } from './Modals/SubmitEmploymentModal';
-import { SubmitEmploymentUnlockModal } from './Modals/SubmitEmploymentUnlockModal';
+import { UnlockEmploymentModal } from './Modals/UnlockEmploymentModal';
 
 import { VacationType } from '../types/enums';
 import CalendarComponent from './CalendarComponent';
@@ -650,7 +650,7 @@ const TimeTracker = memo(() => {
         />
       </Dialog>
       <Dialog onClose={handleCloseSubmitUnlock} open={openSubmitUnlock}>
-        <SubmitEmploymentUnlockModal
+        <UnlockEmploymentModal
           gridApi={gridApiRef.current}
           handleAction={handleAction}
           handleCloseSubmitUnlock={handleCloseSubmitUnlock}
