@@ -1236,34 +1236,26 @@ export const multiApproveEmployment = async (delIDiDDbArr: any[]) => {
  */
 
 export const multiLockEmloyment = async (lockIDiDDbArray: PreparedData): Promise<any> => {
-    console.log("🚀 ~ multiLockEmloyment ~ lockIDiDDbArray:", lockIDiDDbArray)
     
   const managerName = Object.keys(namesIddbObj).find(
     (key) => namesIddbObj[key] === Number(currIddb),
   );
-  console.log("🚀 ~ requests ~ namesDatesDayIDsObj:", namesDatesDayIDsObj)
 
   try {
     const requests = lockIDiDDbArray.map(async (user: {}) => {
-      const userIDDb = namesIddbObj[Object.keys(user)[0]];
+      const userIDDb = namesIddbObj[Object.keys(user)[0]].toString();
       const userDayIDsArr = namesDatesDayIDsObj[Object.keys(user)[0]];
-      console.log("🚀 ~ requests ~ userDayIDsArr:", userDayIDsArr)
-      const getUserLockValues = () => {
-        return userDayIDsArr.map((day: { [s: string]: unknown; } | ArrayLike<unknown>) => Object.values(day)[0]).join(';');
-      };
 
       const selectedDates = Object.values(lockIDiDDbArray[0])[0]
-      console.log("🚀 ~ requests ~ selectedDates:", selectedDates)
 
       const userLockValues = filterDataByDates(selectedDates, userDayIDsArr).map(obj => Object.values(obj)[0]).join(';');
-      console.log("🚀 ~ requests ~ userLockValues:", userLockValues)
 
       let formDataMultiLock = new FormData();
 
       formDataMultiLock.append('ID', userLockValues);
       formDataMultiLock.append('TypeID', '1040');
       formDataMultiLock.append('Data[0][name]', '9249');
-      formDataMultiLock.append('Data[0][value]', managerName);
+      formDataMultiLock.append('Data[0][value]', managerName as string);
       formDataMultiLock.append('Data[0][isName]', 'false');
       formDataMultiLock.append('Data[0][maninp]', 'false');
       formDataMultiLock.append('Data[0][forFilter]', '0');

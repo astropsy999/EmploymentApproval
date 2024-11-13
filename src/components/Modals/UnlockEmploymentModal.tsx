@@ -35,7 +35,6 @@ export const UnlockEmploymentModal: React.FC<UnlockEmploymentModalProps> = ({
   const selectedRows = gridApi.getSelectedRows();
 
   const unlockIDiDDbArray = getFioUnlockIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
-  console.log("🚀 ~ unlockIDiDDbArray:", unlockIDiDDbArray)
 
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));

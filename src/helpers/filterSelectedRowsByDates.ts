@@ -25,8 +25,6 @@ const filterSelectedRowsByDates = (
       return format(date, 'dd/MM/yyyy');
     });
 
-  console.log("🚀 ~ Selected Dates (dd/MM/yyyy):", selectedDateKeys);
-
   // Шаг 2: Фильтровать каждую запись в `selectedRows`
   const filteredRows: EmployeeData[] = selectedRows.map((employee) => {
     // Создаём новый объект для каждого сотрудника
@@ -43,8 +41,6 @@ const filterSelectedRowsByDates = (
 
     return filteredEmployee;
   });
-
-  console.log("🚀 ~ Filtered Rows:", filteredRows);
 
   return filteredRows;
 };
