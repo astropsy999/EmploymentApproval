@@ -46,6 +46,7 @@ import { VacationType } from '../types/enums';
 import CalendarComponent from './CalendarComponent';
 import { ColDef } from 'ag-grid-enterprise';
 import { FirstDataRenderedEvent } from 'ag-grid-community';
+import { formatDateToKey, getDatesInRange } from '../helpers/datesRanges';
 
 const TimeTracker = memo(() => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -119,26 +120,26 @@ const TimeTracker = memo(() => {
     const columnState = columnApi.getColumnState();
 
     const gridApi = params.api;
-    const filterInstance = gridApi.getFilterInstance('ФИО');
+    const filterInstance = gridApi.getFilterInstance('ФИО') as any;
 
     const getAllLinkedUsers = await getLinkedAllUsers();
 
     const allNamesArr = getAllLinkedUsers?.map(
-      (name) => name.LinkedObjName || '',
+      (name: { LinkedObjName: any; }) => name.LinkedObjName || '',
     );
 
     const shortenArr = shortenNames(allNamesArr);
 
-    const getFilterKeys = filterInstance.getFilterKeys();
+    const getFilterKeys = filterInstance?.getFilterKeys();
 
-    const filteredArray = getFilterKeys.filter((item) => {
+    const filteredArray = getFilterKeys.filter((item: string | string[]) => {
       return shortenArr.some((name) => item.includes(name));
     });
 
     filterInstance?.setModel({
       values: filteredArray,
     });
-    filterInstance.applyModel();
+    filterInstance?.applyModel();
     gridApi.onFilterChanged();
 
     customLoader(false);
@@ -150,8 +151,8 @@ const TimeTracker = memo(() => {
       if (!currentUserLinked) {
         currentUserLinked = getFilterKeys;
       }
-      function extractFirstPart(arr) {
-        const resultArray = [];
+      function extractFirstPart(arr: any[]) {
+        const resultArray: any[] = [];
 
         arr?.forEach((value) => {
           // Используем регулярное выражение для извлечения фамилии
@@ -171,9 +172,9 @@ const TimeTracker = memo(() => {
     });
 
     calculateTotalRow(gridRef);
-    const getMenuBtn = document.querySelector('[ref="eMenu"]');
+    const getMenuBtn = document.querySelector('[ref="eMenu"]') as HTMLElement;
     addTitleAttrToElem(getMenuBtn, 'Список сотрудников');
-    document.querySelector('.ag-center-cols-viewport').style.height =
+    (document?.querySelector('.ag-center-cols-viewport') as HTMLElement).style.height =
       'calc(100% + 20px)';
   }
 
@@ -188,7 +189,7 @@ const TimeTracker = memo(() => {
       closeBtn.setAttribute('role', 'presentation');
 
       closeBtn.addEventListener('click', () => {
-        document.querySelector('.ag-menu').style.display = 'none';
+        (document.querySelector('.ag-menu') as HTMLElement).style.display = 'none';
       });
 
       getMenuheaderBar?.appendChild(closeBtn);
@@ -201,7 +202,7 @@ const TimeTracker = memo(() => {
   const gridApiRef = useRef(null);
 
   // Обработчик события onGridReady
-  const onGridReady = (params) => {
+  const onGridReady = (params: any) => {
     // Сохраняем API грида в переменную gridApiRef
     gridApiRef.current = params.api;
     setGGridRef && setGGridRef(params.api);
@@ -211,10 +212,10 @@ const TimeTracker = memo(() => {
     const columnDefs = gridApi.getColumnDefs();
 
     const totalColumnDef = columnDefs.find(
-      (colDef) => colDef.field === '\u03A3',
+      (colDef: { field: string; }) => colDef.field === '\u03A3',
     );
 
-    totalColumnDef.valueGetter = function (params) {
+    totalColumnDef.valueGetter = function (params: { data: { [s: string]: unknown; } | ArrayLike<unknown>; }) {
       let total = 0;
       Object.values(params.data).forEach((val) => {
         const numbers = extractNumbersFromValue(val);
@@ -232,6 +233,11 @@ const TimeTracker = memo(() => {
     // customLoader(false);
   };
 
+  // Получаем массив дат за неделю
+  const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));
+  const selectedDateKeys = datesArray
+        .map(date => formatDateToKey(date));
+
   const gridOptions = {
     onFirstDataRendered: onFirstDataRendered,
     onGridColumnsChanged: onGridColumnsChanged(columnDefs),
@@ -243,7 +249,7 @@ const TimeTracker = memo(() => {
       const hasEvents = 'objWrapper';
       const hasVacation = VacationType.Vacation || VacationType.SickLeave || VacationType.Holiday;
 
-      if (!deepSearchObject(params.data, hasEvents, hasVacation)) {
+      if (!deepSearchObject(params.data, hasEvents, hasVacation, selectedDateKeys)) {
         return 50;
       }
     },
@@ -261,9 +267,9 @@ const TimeTracker = memo(() => {
     width: undefined,
     sizeColumnsToFit: true,
     cellDataType: false,
-  }));
+  }), []);
 
-  const eventContent = (info) => {
+  const eventContent = (info: { event: { _def: { extendedProps: any; }; title: string; }; }) => {
     const { extendedProps } = info.event._def;
 
     // Создаем элементы для отображения
@@ -339,21 +345,21 @@ const TimeTracker = memo(() => {
     return { domNodes: arrayOfDomNodes };
   };
 
-  const eventTimeFormat = {
-    hour: 'numeric',
-    minute: '2-digit',
-    meridiem: false,
-  };
+  // const eventTimeFormat = {
+  //   hour: 'numeric',
+  //   minute: '2-digit',
+  //   meridiem: false,
+  // };
 
-  const slotLabelFormat = {
-    hour: 'numeric',
-    minute: '2-digit',
-    omitZeroMinute: false,
-    meridiem: false,
-  };
+  // const slotLabelFormat = {
+  //   hour: 'numeric',
+  //   minute: '2-digit',
+  //   omitZeroMinute: false,
+  //   meridiem: false,
+  // };
 
   // При клике на ячейку таблицы
-  const cellClickedListener = (event) => {
+  const cellClickedListener = (event: { colDef: { field: string; }; node: { isSelected: () => any; setSelected: (arg0: boolean) => void; }; value: string; column: { getColId: () => any; }; }) => {
     if (event.colDef.field === 'ФИО') {
       if (!event.node.isSelected()) {
         event.node.setSelected(true);
@@ -380,16 +386,16 @@ const TimeTracker = memo(() => {
 
       const nameDataObjDate =
         clickedName && eventsDataFioObjAll[clickedName][date];
-      const events = [];
-      const eventsWithMethods = [];
-      let methodsEventsArr = [];
+      const events: ((prevState: never[]) => never[]) | { title?: any; start?: any; end?: any; time?: any; type?: any; object?: any; subTaskType?: any; fullDescription?: any; location?: any; employment?: any; methTime?: string; }[] = [];
+      const eventsWithMethods: { [x: number]: any; }[] = [];
+      let methodsEventsArr: Iterable<any> | null | undefined = [];
 
-      const addEventsWithMethods = (currevent) => {
+      const addEventsWithMethods = (currevent: { objID: any; }) => {
         eventsWithMethods.push({ [currevent.objID]: currevent });
-        methodsEventsArr.push(currevent.objID);
+        methodsEventsArr?.push(currevent.objID);
       };
 
-      nameDataObjDate?.map((event) => {
+      nameDataObjDate?.map((event: { title?: any; start?: any; end?: any; time?: any; type?: any; object?: any; subType?: any; fullDescription?: any; location?: any; employment?: any; objID?: any; }) => {
         if (`meth` in event) {
           addEventsWithMethods(event);
         } else {
@@ -417,9 +423,9 @@ const TimeTracker = memo(() => {
 
       const addMethEventToEvents = (evMethObjID) => {
         evMethObjID.forEach((ev) => {
-          const mergedEventMeth = {};
+          const mergedEventMeth: any = {};
           let metStr = '';
-          ev.forEach((methEv) => {
+          ev.forEach((methEv: { [s: string]: unknown; } | ArrayLike<unknown>) => {
             const methEv0 = Object.values(methEv)[0];
             mergedEventMeth['employment'] = methEv0.employment;
             mergedEventMeth['title'] = methEv0.title;

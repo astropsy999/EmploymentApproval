@@ -12,7 +12,7 @@ import {
   multiLockEmloyment,
 } from '../../data/api';
 import { customLoader } from '../../helpers/customLoader';
-import { getDatesInRange } from '../../helpers/datesRanges';
+import { formatDateToKey, getDatesInRange } from '../../helpers/datesRanges';
 import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 import {
   getFioApproveIDsArr,
@@ -106,12 +106,7 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
     checkUnsubmitted();
   }, [selectedRows, checkedDates, datesArray]);
 
-  const formatDateToKey = (date: Date): string => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+ 
 
   const handleCheckboxChange = (dateKey: string) => {
     setCheckedDates((prev) => ({
