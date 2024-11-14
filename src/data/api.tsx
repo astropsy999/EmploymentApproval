@@ -156,9 +156,6 @@ export const getLinkedUsers = async () => {
     })
     .json();
 
-  console.log("🚀 ~ getLinkedUsers ~ LinkedUsersRes:", LinkedUsersRes)
-  
-
   currIddb = LinkedUsersRes.data[0][2].ObjID;
 
   currFamName = LinkedUsersRes.data[0][2].Value;

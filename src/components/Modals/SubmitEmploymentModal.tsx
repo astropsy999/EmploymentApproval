@@ -20,7 +20,7 @@ import ModalHeader from './ModalHeader';
 import SelectedEmployeesList from './SelectedEmployeesList';
 
 interface SubmitEmploymentModalProps {
-  gridApi: GridApi;
+  gridApi: GridApi | undefined;
   handleAction: (
     actionType: string,
     dataArray: any[],
@@ -41,7 +41,7 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
 
   const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
 
-  const delIDiDDbArray = getFioApproveIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
+  const delIDiDDbArray = getFioApproveIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates)!);
 
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));

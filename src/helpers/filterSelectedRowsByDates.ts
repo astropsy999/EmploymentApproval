@@ -13,9 +13,9 @@ interface EmployeeData {
  * @returns Новый массив сотрудников с данными только по выбранным датам.
  */
 const filterSelectedRowsByDates = (
-  selectedRows: EmployeeData[],
+  selectedRows: EmployeeData[] | undefined,
   checkedDates: { [key: string]: boolean }
-): EmployeeData[] => {
+): EmployeeData[] | undefined => {
   // Шаг 1: Извлечь выбранные даты и преобразовать их в формат 'dd/MM/yyyy'
   const selectedDateKeys: string[] = Object.keys(checkedDates)
     .filter((isoDate) => checkedDates[isoDate])
@@ -26,7 +26,7 @@ const filterSelectedRowsByDates = (
     });
 
   // Шаг 2: Фильтровать каждую запись в `selectedRows`
-  const filteredRows: EmployeeData[] = selectedRows.map((employee) => {
+  const filteredRows: EmployeeData[] | undefined = selectedRows?.map((employee) => {
     // Создаём новый объект для каждого сотрудника
     const filteredEmployee: EmployeeData = {
       "ФИО": employee["ФИО"], // Сохраняем ФИО

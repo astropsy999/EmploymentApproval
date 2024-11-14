@@ -45,8 +45,9 @@ import { UnlockEmploymentModal } from './Modals/UnlockEmploymentModal';
 import { VacationType } from '../types/enums';
 import CalendarComponent from './CalendarComponent';
 import { ColDef } from 'ag-grid-enterprise';
-import { FirstDataRenderedEvent } from 'ag-grid-community';
+import { CellClickedEvent, FirstDataRenderedEvent } from 'ag-grid-community';
 import { formatDateToKey, getDatesInRange } from '../helpers/datesRanges';
+import { CalendarEvent } from './types';
 
 const TimeTracker = memo(() => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -83,8 +84,8 @@ const TimeTracker = memo(() => {
   const [openSubmit, setOpenSubmit] = useState(false);
   const [openSubmitLock, setOpenSubmitLock] = useState(false);
   const [openSubmitUnlock, setOpenSubmitUnlock] = useState(false);
-  const [eventsObj, setEventsObj] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [eventsObj, setEventsObj] = useState<CalendarEvent[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [slotMinTime, setSlotMinTime] = useState('07:00:00');
   const [slotMaxTime, setSlotMaxTime] = useState('22:00:00');
   const [loading, setLoading] = useState(false);
@@ -359,7 +360,7 @@ const TimeTracker = memo(() => {
   // };
 
   // При клике на ячейку таблицы
-  const cellClickedListener = (event: { colDef: { field: string; }; node: { isSelected: () => any; setSelected: (arg0: boolean) => void; }; value: string; column: { getColId: () => any; }; }) => {
+  const cellClickedListener = (event: CellClickedEvent) => {
     if (event.colDef.field === 'ФИО') {
       if (!event.node.isSelected()) {
         event.node.setSelected(true);
@@ -373,7 +374,7 @@ const TimeTracker = memo(() => {
       const rowNode = event?.node; // получаем узел строки
       const fio = rowNode.data.ФИО;
 
-      function getFamilyIO(fio) {
+      function getFamilyIO(fio: string) {
         const FamilyIO = fio?.split(' ');
         const FIO = FamilyIO?.slice(0, 2);
         const result = FIO?.join(' ');
@@ -386,16 +387,16 @@ const TimeTracker = memo(() => {
 
       const nameDataObjDate =
         clickedName && eventsDataFioObjAll[clickedName][date];
-      const events: ((prevState: never[]) => never[]) | { title?: any; start?: any; end?: any; time?: any; type?: any; object?: any; subTaskType?: any; fullDescription?: any; location?: any; employment?: any; methTime?: string; }[] = [];
-      const eventsWithMethods: { [x: number]: any; }[] = [];
-      let methodsEventsArr: Iterable<any> | null | undefined = [];
+      const events: CalendarEvent[] = [];
+      const eventsWithMethods: { [x: number]: CalendarEvent; }[] = [];
+      let methodsEventsArr: CalendarEvent['objID'][] = [];
 
-      const addEventsWithMethods = (currevent: { objID: any; }) => {
-        eventsWithMethods.push({ [currevent.objID]: currevent });
+      const addEventsWithMethods = (currevent: CalendarEvent) => {
+        eventsWithMethods.push({ [currevent.objID!]: currevent });
         methodsEventsArr?.push(currevent.objID);
       };
 
-      nameDataObjDate?.map((event: { title?: any; start?: any; end?: any; time?: any; type?: any; object?: any; subType?: any; fullDescription?: any; location?: any; employment?: any; objID?: any; }) => {
+      nameDataObjDate?.map((event: CalendarEvent) => {
         if (`meth` in event) {
           addEventsWithMethods(event);
         } else {
@@ -417,17 +418,17 @@ const TimeTracker = memo(() => {
 
       const uniObjID = [...new Set(methodsEventsArr)];
 
-      const eventsMethObjID = uniObjID.map((objid) =>
+      const eventsMethObjID = uniObjID.map((objid: any) =>
         eventsWithMethods.filter((str) => str[objid]),
       );
 
-      const addMethEventToEvents = (evMethObjID) => {
+      const addMethEventToEvents = (evMethObjID: any[]) => {
         evMethObjID.forEach((ev) => {
           const mergedEventMeth: any = {};
           let metStr = '';
-          ev.forEach((methEv: { [s: string]: unknown; } | ArrayLike<unknown>) => {
+          ev.forEach((methEv: CalendarEvent) => {
             const methEv0 = Object.values(methEv)[0];
-            mergedEventMeth['employment'] = methEv0.employment;
+            mergedEventMeth['employment'] = methEv0?.employment;
             mergedEventMeth['title'] = methEv0.title;
             mergedEventMeth['start'] = methEv0.start;
             mergedEventMeth['end'] = methEv0.end;
@@ -448,15 +449,19 @@ const TimeTracker = memo(() => {
       addMethEventToEvents(eventsMethObjID);
 
       const sortedEvents =
-        events.length &&
-        events.sort((a, b) => new Date(a.start) - new Date(b.start));
+        events.length ?
+        events.sort((a, b) => {
+          const startDate = Date.parse(a.start);
+          const endDate = Date.parse(b.start);
+          return startDate - endDate;
+        }): [];
       if (sortedEvents.length > 0) {
         const firstEventStartTime = sortedEvents[0].start.split('T')[1];
 
         const lastEventEndTime =
           sortedEvents[sortedEvents.length - 1]?.end?.split('T')[1];
 
-        const addHalfHour = (timeString) => {
+        const addHalfHour = (timeString: string) => {
           const timeParts = timeString?.split(':');
           const dateObj = new Date();
           if (timeParts) {
@@ -470,7 +475,7 @@ const TimeTracker = memo(() => {
           return newTimeString;
         };
 
-        const subtractHalfHour = (timeString) => {
+        const subtractHalfHour = (timeString: string) => {
           const timeParts = timeString.split(':');
           const dateObj = new Date();
           dateObj.setHours(parseInt(timeParts[0]));
@@ -495,7 +500,7 @@ const TimeTracker = memo(() => {
     }
   };
 
-  const updateStateOfNewData = (newData) => {
+  const updateStateOfNewData = (newData: any) => {
     setRowData(newData[0]);
     setObjectsArr(newData[1]);
     setTypesArr(newData[2]);
@@ -557,7 +562,7 @@ const TimeTracker = memo(() => {
     setOpen(false);
   };
 
-  const toastSuccess = (message) => {
+  const toastSuccess = (message: string) => {
     toast.success(message, {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 1000,
@@ -569,7 +574,7 @@ const TimeTracker = memo(() => {
     });
   };
 
-  const handleAction = async (actionType, dataArray) => {
+  const handleAction = async (actionType: string, dataArray: any[]) => {
     setLoading(true);
     try {
       let response;
@@ -628,7 +633,7 @@ const TimeTracker = memo(() => {
 
       <Dialog onClose={handleCloseSubmit} open={openSubmit} maxWidth="md">
         <SubmitEmploymentModal
-          gridApi={gridApiRef.current}
+          gridApi={gridApiRef.current !== null ? gridApiRef.current : undefined}
           handleAction={handleAction}
           handleCloseSubmit={handleCloseSubmit}
           loading={loading}
@@ -637,19 +642,19 @@ const TimeTracker = memo(() => {
 
       <Dialog onClose={handleCloseSubmitLock} open={openSubmitLock}>
         <LockEmploymentModal
-          gridApi={gridApiRef.current}
+          gridApi={gridApiRef.current !== null ? gridApiRef.current : undefined}
           handleAction={handleAction}
           handleCloseSubmitLock={handleCloseSubmitLock}
-          // hasUnsubmitted={hasUnsubmitted}
           toastSuccess={toastSuccess}
           updateStateOfNewData={updateStateOfNewData}
           loading={loading}
-          setLoading={setLoading}
-        />
+          setLoading={setLoading} hasUnsubmitted={false} toastError={function (message: string): void {
+            throw new Error('Function not implemented.');
+          } }        />
       </Dialog>
       <Dialog onClose={handleCloseSubmitUnlock} open={openSubmitUnlock}>
         <UnlockEmploymentModal
-          gridApi={gridApiRef.current}
+          gridApi={gridApiRef.current !== null ? gridApiRef.current : undefined}
           handleAction={handleAction}
           handleCloseSubmitUnlock={handleCloseSubmitUnlock}
           loading={loading}
@@ -685,6 +690,7 @@ const TimeTracker = memo(() => {
           onCellClicked={cellClickedListener}
           components={components}
           suppressLastEmptyLineOnPaste={true}
+          //@ts-ignore
           gridOptions={gridOptions}
           suppressColumnVirtualisation={true}
           suppressRowVirtualisation={true}

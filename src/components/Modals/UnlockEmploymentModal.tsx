@@ -15,7 +15,7 @@ import SelectedEmployeesList from './SelectedEmployeesList';
 import filterSelectedRowsByDates from '../../helpers/filterSelectedRowsByDates';
 
 interface UnlockEmploymentModalProps {
-  gridApi: GridApi;
+  gridApi: GridApi | undefined;
   handleAction: (action: string, data: any) => Promise<void>;
   handleCloseSubmitUnlock: () => void;
   loading: boolean;
@@ -32,9 +32,9 @@ export const UnlockEmploymentModal: React.FC<UnlockEmploymentModalProps> = ({
     [key: string]: boolean;
   }>({});
 
-  const selectedRows = gridApi.getSelectedRows();
+  const selectedRows = gridApi?.getSelectedRows();
 
-  const unlockIDiDDbArray = getFioUnlockIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates));
+  const unlockIDiDDbArray = getFioUnlockIDsArr(filterSelectedRowsByDates(selectedRows, checkedDates)!);
 
   // Получаем массив дат за неделю
   const datesArray = getDatesInRange(new Date(startDate), new Date(endDate));

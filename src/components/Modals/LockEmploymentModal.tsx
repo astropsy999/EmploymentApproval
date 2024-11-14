@@ -32,7 +32,7 @@ import { deepSearchObject } from '../../helpers/deepSearchInObject';
  * Интерфейс для пропсов компонента SubmitEmploymentLockModal.
  */
 interface LockEmploymentModalProps {
-  gridApi: GridApi;
+  gridApi: GridApi | undefined;
   handleCloseSubmitLock: () => void;
   handleAction: (
     actionType: 'approve' | 'lock' | 'unlock',
@@ -57,7 +57,7 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
   setLoading,
 }) => {
   const { startDate, endDate } = useRange();
-  const selectedRows: EmployeeData[] = gridApi.getSelectedRows();
+  const selectedRows: EmployeeData[] | undefined = gridApi?.getSelectedRows();
 
   const [checkedDates, setCheckedDates] = React.useState<{
     [key: string]: boolean;
@@ -66,10 +66,10 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
   const [hasUnsubmitted, setHasUnsubmitted] = useState<boolean>(false);
 
   const lockIDiDDbArray = getFioLockIDsArr(
-    filterSelectedRowsByDates(selectedRows, checkedDates),
+    filterSelectedRowsByDates(selectedRows, checkedDates)!,
   );
   const delIDiDDbArray = getFioApproveIDsArr(
-    filterSelectedRowsByDates(selectedRows, checkedDates),
+    filterSelectedRowsByDates(selectedRows, checkedDates)!,
   );
 
   // Получаем массив дат за неделю
@@ -96,11 +96,11 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
         .map(date => formatDateToKey(date));
 
       // Проверяем каждый выбранный пользователь на наличие несогласованных задач
-      const unsubmitted = selectedRows.some(user => {
+      const unsubmitted = selectedRows?.some(user => {
         return deepSearchObject(user, 'objWrapper', 'approved', selectedDateKeys);
       });
 
-      setHasUnsubmitted(unsubmitted);
+      setHasUnsubmitted(unsubmitted!);
     };
 
     checkUnsubmitted();

@@ -37,7 +37,7 @@ export interface DateIdMap {
  */
 export interface CalendarComponentProps {
   events: any[]; // Определите более конкретный тип, если возможно
-  selectedDate: Date | null;
+  selectedDate: string | null;
   slotMinTime: string;
   slotMaxTime: string;
   eventContent: (info: any) => { domNodes: HTMLElement[] };

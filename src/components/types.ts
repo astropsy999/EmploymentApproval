@@ -1,0 +1,15 @@
+export interface CalendarEvent {
+    title: string,
+    start: string,
+    end: string,
+    time: string,
+    type: string,
+    object: string,
+    subTaskType: any,
+    fullDescription: string,
+    location: string,
+    employment: string,
+    subType?: string,
+    objID?: string,
+    meth?: any[],
+}
