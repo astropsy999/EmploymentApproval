@@ -2,10 +2,10 @@ import { checkIcon } from '../helpers/checkIcon';
 
 
 // Функция для генерации HTML события без методов
-export const generateEventHTML = (obj: { objID: any; dayID: any; time: any; title: any; location: any; object: any; type: any; subType: any; isApproved: any; }, onVacation: boolean) => {
+export const generateEventHTML = (obj: any, onVacation: boolean) => {
     return `
       <div class="objWrapper fc-event-main fc-event" objID="${obj.objID}" dayID="${obj.dayID}">
-        <span class="factTime"><b>${obj.time}ч</b></span>
+        ${obj.time !== '' ? `<span class="factTime"><b>${obj.time}ч</b></span>` : ''}
         <span class="title">${obj.title}</span>
         <div class="objLocationWrapper">
           ${!onVacation ? `<div style="margin-bottom:3px"><span class="location">${obj.location}</span></div>` : ''}
@@ -37,7 +37,7 @@ export const generateMethodsHTML = (meth: any[], methObj: { [x: string]: any; },
   };
 
 // Функция для генерации HTML события с методами
-export const generateEventWithMethodsHTML = (resultObject: { objID: any; dayID: any; globTime: any; title: any; location: any; object: any; type: any; subType: any; meth: any[]; methObj: { [x: string]: any; }; methZones: { [x: string]: any; }; time: { [x: string]: any; }; isApproved: any; }) => {
+export const generateEventWithMethodsHTML = (resultObject: any) => {
     return `
       <div class="objWrapper fc-event-main fc-event" objID="${resultObject.objID}" dayID="${resultObject.dayID}">
         <span class="factTime"><b>${resultObject.globTime}ч</b></span>
@@ -54,6 +54,16 @@ export const generateEventWithMethodsHTML = (resultObject: { objID: any; dayID: 
           resultObject.methZones,
           resultObject.time
         )}</div>
+        ${
+            resultObject.brigadeList
+              ? `<div class="brigadeList" style='width: 100%;'>[${resultObject.brigadeList}]</div>`
+              : ''
+          }
+          ${
+            resultObject.isBrigadier
+              ? `<div class="isBrigadier">Бригадир: ${resultObject.isBrigadier}</div>`
+              : ''
+          }
         ${
           resultObject.isApproved
             ? `<span class="approved" title="${resultObject.isApproved}">${checkIcon}</span>`
