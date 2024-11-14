@@ -30,6 +30,8 @@ export const addMethEventToEvents = (evMethObjID: any[], events: CalendarEvent[]
         mergedEventMeth['time'] = methEv0.globTime;
         mergedEventMeth['location'] = methEv0.location;
         mergedEventMeth['employment'] = methEv0.employment;
+        mergedEventMeth['isBrigadier'] = methEv0.isBrigadier;
+        mergedEventMeth['brigadeList'] = methEv0.brigadeList;
 
         metStr += `${methEv0.meth}-${methEv0.time}, `;
       });

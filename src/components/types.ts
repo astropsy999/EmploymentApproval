@@ -12,4 +12,6 @@ export interface CalendarEvent {
     subType?: string,
     objID?: string,
     meth?: any[],
+    isBrigadier?: string,
+    brigadeList?: string,
 }

@@ -833,6 +833,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date): Promi
 
 
   const eventsDataFioObjAll = eventsDataFioObj;
+  console.log("🚀 ~ getUsersForManagers ~ eventsDataFioObjAll:", eventsDataFioObjAll)
 
   const eventsDataFioObjLinked = eventsDataFioObj;
 

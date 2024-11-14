@@ -38,10 +38,10 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
     height: '85%',
   };
 
-  const eventContent = (info: { event: { _def: { extendedProps: any; }; title: string; }; }) => {
+  const eventContent = (info: any) => {
     const { extendedProps } = info.event._def;
-    console.log("🚀 ~ eventContent ~ extendedProps:", extendedProps)
-
+    console.log("🚀 ~ eventContent ~ info.event:", info.event)
+  
     // Создаем элементы для отображения
     const eventContName = document.createElement('span');
     const eventTaskTitle = document.createElement('span');
@@ -66,9 +66,15 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
     const location = document.createElement(
       extendedProps.time <= 1 ? 'span' : 'div',
     );
-
+  
+    // **Добавляем создание новых элементов**
+    const brigadeListElement = document.createElement('span');
+    brigadeListElement.classList.add('brigadeList');
+  
+    const isBrigadierElement = document.createElement('span');
+    isBrigadierElement.classList.add('isBrigadier');
+  
     // Добавляем классы к элементам, если необходимо
-
     eventContName.classList.add('factTime');
     eventTaskTitle.classList.add('title');
     eventTaskType.classList.add('eventTaskType');
@@ -76,30 +82,33 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
     methTime.classList.add('methTime');
     employment.classList.add('employment');
     location.classList.add('location');
-
-    // Вставляем значения
-
-    eventTaskSubType.innerHTML = extendedProps.subTaskType || '';
-    if (extendedProps.methTime && extendedProps.methTime !== '') {
-    }
-    if (extendedProps.object && extendedProps.object !== 'Не выбрано') {
-      eventObject.classList.add('eventObject');
-    }
     fullDescription.classList.add('fullDescription');
-
+  
+    // Вставляем значения
     eventContName.innerHTML = `<b>${extendedProps.time}ч</b>`;
     eventTaskTitle.innerHTML = info.event.title || '';
-
-    if (extendedProps.object !== 'Не выбрано') {
-      eventObject.innerHTML = extendedProps.object;
-    }
     eventTaskType.innerHTML = ` ${extendedProps.type}`;
     eventTaskSubType.innerHTML = extendedProps.subTaskType || '';
-    fullDescription.innerHTML = extendedProps.fullDescription;
     methTime.innerHTML = ` ${extendedProps.methTime || ''}`;
     employment.innerHTML = `${extendedProps.employment || ''}`;
     location.innerHTML = `${extendedProps.location || ''}`;
-
+    fullDescription.innerHTML = extendedProps.fullDescription || '';
+  
+    if (extendedProps.object && extendedProps.object !== 'Не выбрано') {
+      eventObject.classList.add('eventObject');
+      eventObject.innerHTML = extendedProps.object;
+    }
+  
+    // **Устанавливаем значения для новых элементов**
+    if (extendedProps.brigadeList) {
+      brigadeListElement.innerHTML = `[${extendedProps.brigadeList}]`;
+    }
+  
+    if (extendedProps.isBrigadier) {
+      isBrigadierElement.innerHTML = `Бригадир: ${extendedProps.isBrigadier}`;
+    }
+  
+    // Обновляем массив элементов для отображения
     const arrayOfDomNodes = [
       eventContName,
       eventTaskTitle,
@@ -109,11 +118,14 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
       eventTaskType,
       eventTaskSubType,
       methTime,
+      brigadeListElement,    // Добавляем brigadeListElement
+      isBrigadierElement,    // Добавляем isBrigadierElement
       fullDescription,
     ];
-
+  
     return { domNodes: arrayOfDomNodes };
   };
+  
 
   return (
     <Box sx={style}>

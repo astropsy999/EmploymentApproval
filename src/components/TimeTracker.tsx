@@ -245,6 +245,7 @@ const TimeTracker = memo(() => {
 
   // При клике на ячейку таблицы
   const cellClickedListener = (event: CellClickedEvent) => {
+    console.log("🚀 ~ cellClickedListener ~ event:", event)
     if (event.colDef.field === 'ФИО') {
       if (!event.node.isSelected()) {
         event.node.setSelected(true);
@@ -295,6 +296,8 @@ const TimeTracker = memo(() => {
             fullDescription: event.fullDescription,
             location: event.location,
             employment: event.employment,
+            isBrigadier: event.isBrigadier,
+            brigadeList: event.brigadeList,
           });
         }
         setSelectedDate(event.start);
