@@ -40,6 +40,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
 
   const eventContent = (info: { event: { _def: { extendedProps: any; }; title: string; }; }) => {
     const { extendedProps } = info.event._def;
+    console.log("🚀 ~ eventContent ~ extendedProps:", extendedProps)
 
     // Создаем элементы для отображения
     const eventContName = document.createElement('span');

@@ -191,6 +191,7 @@
   white-space: nowrap;
   padding: 2px;
   margin-bottom: -5px;
+  font-weight: 600;
 }
 
 .factTime {
@@ -219,13 +220,14 @@
 }
 .title {
   color: #1862c6 !important;
-  font-weight: 600;
+  font-weight: 800;
   padding: 5px;
   font-size: 12px;
 }
 
 .objLocationWrapper {
   margin-top: 2px;
+  font-weight: 600;
 }
 
 .eventTaskType {
@@ -251,8 +253,9 @@
 }
 .eventTaskSubType {
   color: green;
-  font-size: 8px;
+  font-size: 10px;
   opacity: 0.8;
+  padding: 2px;;
 }
 
 .fullDescription {

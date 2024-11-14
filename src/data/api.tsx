@@ -4,11 +4,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { checkIcon } from '../helpers/checkIcon';
 import { customLoader } from '../helpers/customLoader';
 import * as dr from '../helpers/datesRanges';
-import * as e from './endpoints';
-import { PreparedData } from '../helpers/getInfoOfSelectedUsers';
 import { filterDataByDates } from '../helpers/filterDataByDateForLocking';
+import { PreparedData } from '../helpers/getInfoOfSelectedUsers';
 import { DateIdMap } from '../types';
-import { LinkedUsersResponse } from './types';
+import * as e from './endpoints';
 
 
 
@@ -23,12 +22,12 @@ let currFamName: string,
   currIddb: string,
   currManagerLevel: number,
   currManagerFullName: string;
-const namesIddbObj: Record<string, number> = {};
+const namesIddbObj: any = {};
 let namesDatesDayIDsObj: Record<string, DateIdMap[]> = {};
-let lockedDates = {};
-let approvedDates = {};
-const managersLevels = {};
-let usersSavedMessagesDates = {};
+let lockedDates: any = {};
+let approvedDates: any = {};
+const managersLevels: any = {};
+let usersSavedMessagesDates: any = {};
 
 export const getLinkedUsers = async () => {
   let getLinkedUsersFD = new FormData();
@@ -148,7 +147,7 @@ export const getLinkedUsers = async () => {
   getLinkedUsersFD.append('startAssociation', '');
   getLinkedUsersFD.append('allCountAssociation', '0');
 
-  let LinkedUsersRes = await ky
+  let LinkedUsersRes: any = await ky
     .post(e.getUseridURL, {
       body: getLinkedUsersFD,
       credentials: 'include',
@@ -184,7 +183,7 @@ export const getLinkedAllUsers = async () => {
   getAllLinkedUsers.append('GlobalInterfaceID', '1798');
   getAllLinkedUsers.append('templ_mode', 'false');
 
-  let allLinkedUsersRes = await ky
+  let allLinkedUsersRes: any = await ky
     .post(e.buildWindowForm, {
       body: getAllLinkedUsers,
       credentials: 'include',
@@ -275,7 +274,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
   getUsersFD.append('isLoadTotal', '0');
   getUsersFD.append('getOnlyTotal', '0');
 
-  let UsersForManagersRes = await ky
+  let UsersForManagersRes: any = await ky
     .post(e.getUseridURL, {
       body: getUsersFD,
       credentials: 'include',
@@ -294,7 +293,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
   };
 
   // Собираем ФИО, iDDb, dayIDs, isBlocked
-  res.map((item: { ObjID: any; }[]) => {
+  res.map((item: any[]) => {
     const name = item[2].Value;
     const date = item[7].Value;
     const id = item[7].ObjID;
@@ -361,15 +360,15 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
   // Уникализируем ФИО
   const namesArr = setArr(namesArray);
 
-  let dateObj = {};
-  let objectsArray: Iterable<any> | null | undefined = [];
-  let typesArray: Iterable<any> | null | undefined = [];
-  let divsArray: Iterable<any> | null | undefined = [];
-  let taskSubtypeArr: Iterable<any> | null | undefined = [];
-  let eventsDataFioObj = {};
+  let dateObj: any = {};
+  let objectsArray: any[] = [];
+  let typesArray: any[] = [];
+  let divsArray: any[] = [];
+  let taskSubtypeArr: any[] = [];
+  let eventsDataFioObj: any = {};
 
   // На основе собранных уникальных ФИО выгребаем данные для каждого человека на каждую дату и собираем для отрисовки в таблице
-  namesArr.map((name) => {
+  namesArr.map((name: any) => {
     const nameArray = res.filter((item: { Value: unknown; }[]) => item[2].Value === name);
     let division;
     let position;
@@ -377,7 +376,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
 
     let total = 0;
 
-    nameArray.map((nameA: { Value: any; }[]) => {
+    nameArray.map((nameA: any[]) => {
       const date = nameA[7].Value;
       const object = nameA[13].Value;
       const time = nameA[17].Value;
@@ -608,7 +607,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
         let objStrWithMeths = '';
 
         const generateEventsWithMethods = (arr: any[]) => {
-          const methodDataMap = {};
+          const methodDataMap: any = {};
 
           arr.forEach((item: { [x: string]: any; hasOwnProperty: (arg0: string) => any; }) => {
             for (const method in item) {
@@ -718,7 +717,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
     };
     dateObj;
 
-    function isUserForbidden(username: unknown) {
+    function isUserForbidden(username: any) {
       // Проверяем, существует ли пользователь в объекте
       if (managersLevels.hasOwnProperty(username)) {
         // Получаем уровень доступа для данного пользователя
@@ -761,7 +760,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
   // Фильтруем результирующий объект и массив с пользователями в соответствии с выбранными руководителем пользователями
 
   function filterObjectAndArrayByNames(namesArray: any[], dataObject: { [x: string]: any; hasOwnProperty?: any; }, dataArray: any[]) {
-    const filteredObject = {};
+    const filteredObject: any = {};
     const filteredArray: any[] = [];
 
     namesArray.forEach((fullName: string) => {
@@ -790,11 +789,11 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
 
   const eventsDataFioObjAll = eventsDataFioObj;
 
-  const { linkedUsersData, filteredArray } = filterObjectAndArrayByNames(
-    linkedUsers,
-    eventsDataFioObj,
-    tableDataArr,
-  );
+  // const { linkedUsersData, filteredArray } = filterObjectAndArrayByNames(
+  //   linkedUsers,
+  //   eventsDataFioObj,
+  //   tableDataArr,
+  // );
 
   // const eventsDataFioObjLinked = linkedUsersData;
   const eventsDataFioObjLinked = eventsDataFioObj;
@@ -973,7 +972,7 @@ export const getInitialTypeSubtypesData = async () => {
   formDatatypeSubtype.append('startAssociation', '');
   formDatatypeSubtype.append('allCountAssociation', '0');
 
-  let typesSubtypesRes = await ky
+  let typesSubtypesRes: any = await ky
     .post(e.getUseridURL, {
       body: formDatatypeSubtype,
       credentials: 'include',
@@ -982,7 +981,7 @@ export const getInitialTypeSubtypesData = async () => {
     .json();
 
   const typeSubtypesData = typesSubtypesRes.data;
-  let typesSubtypesBase = {};
+  let typesSubtypesBase: any = {};
 
   typeSubtypesData.map((tsbt: { Value: any; }[]) => {
     const type = tsbt[2].Value;
@@ -1067,7 +1066,7 @@ export const getDataForLinkedUsersFilter = async () => {
   formDaLinkedUsersFilter.append('startAssociation', '');
   formDaLinkedUsersFilter.append('allCountAssociation', '0');
 
-  let dataLinkedUserFilter = await ky
+  let dataLinkedUserFilter: any = await ky
     .post(e.getUseridURL, {
       body: formDaLinkedUsersFilter,
       credentials: 'include',
@@ -1146,7 +1145,7 @@ export const linkUnlinkUser = async (filteredUsers: any) => {
     linkUnlinkUserFD.append('templ_mode', 'false');
     linkUnlinkUserFD.append('Ignor39', '0');
 
-    let LinkedUnlinkedUsersRes = await ky
+    let LinkedUnlinkedUsersRes: any = await ky
       .post(e.addValueObjectURL, {
         body: linkUnlinkUserFD,
         credentials: 'include',
@@ -1183,12 +1182,12 @@ export const linkUnlinkUser = async (filteredUsers: any) => {
 export const multiApproveEmployment = async (delIDiDDbArr: any[]) => {
   const managerName = Object.keys(namesIddbObj).find(
     (key) => namesIddbObj[key] === currIddb,
-  );
+  ) as string;
 
   try {
     const requests = delIDiDDbArr.map(async (user: { [s: string]: unknown; } | ArrayLike<unknown>) => {
       const userIDDb = namesIddbObj[Object.keys(user)[0]];
-      const userEmplValues = Object.values(user)[0].join(';');
+      const userEmplValues = (Object.values(user)[0] as string[])?.join(';');
 
       let formDataMultiApprove = new FormData();
 
@@ -1360,7 +1359,7 @@ export const getManagersLevels = () => {
  * Отправка сообщения пользователю
  */
 
-export const sendMessageToUser = async (message: string | Blob, dayId: unknown, date: string | Blob | null, fio: any) => {
+export const sendMessageToUser = async (message: string | Blob, dayId: string, date: string | Blob | null, fio: any) => {
   let sendDataFD = new FormData();
 
   // Первый запрос
@@ -1368,7 +1367,7 @@ export const sendMessageToUser = async (message: string | Blob, dayId: unknown, 
   sendDataFD.append('ID', dayId);
   sendDataFD.append('TypeID', '1040');
   sendDataFD.append('Data[0][name]', '7416');
-  sendDataFD.append('Data[0][value]', date);
+  sendDataFD.append('Data[0][value]', date as string);
   sendDataFD.append('Data[0][isName]', 'true');
   sendDataFD.append('Data[0][maninp]', 'false');
   sendDataFD.append('Data[0][GroupID]', '2728');
@@ -1384,7 +1383,7 @@ export const sendMessageToUser = async (message: string | Blob, dayId: unknown, 
   sendDataFD.append('templ_mode', 'false');
   sendDataFD.append('Ignor39', '0');
 
-  let sentDataRes = await ky
+  let sentDataRes: any = await ky
     .post(e.addValueObjectURL, {
       body: sendDataFD,
       credentials: 'include',
