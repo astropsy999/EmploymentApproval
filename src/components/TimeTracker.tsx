@@ -48,6 +48,7 @@ import { ColDef } from 'ag-grid-enterprise';
 import { CellClickedEvent, FirstDataRenderedEvent } from 'ag-grid-community';
 import { formatDateToKey, getDatesInRange } from '../helpers/datesRanges';
 import { CalendarEvent } from './types';
+import Toolbar from './Toolbar';
 
 const TimeTracker = memo(() => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -661,17 +662,12 @@ const TimeTracker = memo(() => {
         />
       </Dialog>
       <Box display="flex" justifyContent="space-between" margin={1}>
-        <Stack direction="row" spacing={1} sx={{ m: 1, height: 40 }}>
-          <DatePicker />
-          <ApproveButton handleOpenModalSubmit={handleOpenModalSubmit} />
-          <LockButton
-            handleOpenModalSubmitLocking={handleOpenModalSubmitLocking}
-          />
-          <UnlockButton
-            handleOpenModalSubmitUnlocking={handleOpenModalSubmitUnlocking}
-          />
-          <ReloadButton reloadPage={reloadPage} />
-        </Stack>
+        <Toolbar 
+          handleOpenModalSubmit={handleOpenModalSubmit} 
+          handleOpenModalSubmitLocking={handleOpenModalSubmitLocking} 
+          handleOpenModalSubmitUnlocking={handleOpenModalSubmitUnlocking} 
+          reloadPage={reloadPage} 
+        />
         <ToggleMessages />
       </Box>
 
