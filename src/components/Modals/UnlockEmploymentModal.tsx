@@ -95,6 +95,7 @@ export const UnlockEmploymentModal: React.FC<UnlockEmploymentModalProps> = ({
               dates={datesArray}
               checkedDates={checkedDates}
               onChange={handleCheckboxChange}
+              disabled
             />
           </>
         ) : (

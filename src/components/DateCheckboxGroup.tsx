@@ -1,5 +1,3 @@
-// src/components/DateCheckboxGroup.tsx
-
 import React from 'react';
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { format } from 'date-fns';
@@ -9,6 +7,7 @@ interface DateCheckboxGroupProps {
   dates: Date[]; // Массив дат для отображения
   checkedDates: { [key: string]: boolean }; // Объект с состояниями чекбоксов
   onChange: (dateKey: string) => void; // Функция обработки изменения состояния чекбокса
+  disabled?: boolean; // Новый пропс для блокировки всех чекбоксов
 }
 
 /**
@@ -17,12 +16,14 @@ interface DateCheckboxGroupProps {
  * @param dates - Массив дат для отображения.
  * @param checkedDates - Объект, где ключи - даты в формате ISO, а значения - булевы флаги выбора.
  * @param onChange - Функция, вызываемая при изменении состояния чекбокса.
+ * @param disabled - Флаг для блокировки всех чекбоксов.
  * @returns JSX.Element
  */
 const DateCheckboxGroup: React.FC<DateCheckboxGroupProps> = ({
   dates,
   checkedDates,
   onChange,
+  disabled = false, 
 }) => {
   return (
     <FormGroup row sx={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -39,6 +40,7 @@ const DateCheckboxGroup: React.FC<DateCheckboxGroupProps> = ({
               <Checkbox
                 checked={checkedDates[dateKey] || false}
                 onChange={() => onChange(dateKey)}
+                disabled={disabled} // Передаём пропс disabled
                 sx={{
                   paddingRight: '1px',
                 }}
