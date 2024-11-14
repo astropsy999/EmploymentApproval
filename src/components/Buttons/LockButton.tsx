@@ -2,7 +2,11 @@ import LockIcon from '@mui/icons-material/Lock';
 import { Button } from '@mui/material';
 import React from 'react';
 
-export const LockButton = ({ handleOpenModalSubmitLocking }) => {
+type LockButtonProps = {
+  handleOpenModalSubmitLocking: () => void;
+}
+
+export const LockButton: React.FC<LockButtonProps> = ({ handleOpenModalSubmitLocking }) => {
   return (
     <Button
       sx={{

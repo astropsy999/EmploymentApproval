@@ -9,7 +9,7 @@ export const ToggleMessages = () => {
   const toggleMessageColumnVisibility = () => {
     const columnDefs = ggridRef.getColumnDefs();
     const showMessage = columnDefs.find(
-      (item) => item.colId === 'messageColumn',
+      (item: { colId: string; }) => item.colId === 'messageColumn',
     );
 
     if (showMessage.hide === true) {

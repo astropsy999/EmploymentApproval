@@ -8,6 +8,7 @@ import * as e from './endpoints';
 import { PreparedData } from '../helpers/getInfoOfSelectedUsers';
 import { filterDataByDates } from '../helpers/filterDataByDateForLocking';
 import { DateIdMap } from '../types';
+import { LinkedUsersResponse } from './types';
 
 
 
@@ -155,6 +156,9 @@ export const getLinkedUsers = async () => {
     })
     .json();
 
+  console.log("🚀 ~ getLinkedUsers ~ LinkedUsersRes:", LinkedUsersRes)
+  
+
   currIddb = LinkedUsersRes.data[0][2].ObjID;
 
   currFamName = LinkedUsersRes.data[0][2].Value;
@@ -217,9 +221,6 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
 
   const start = dr.transformDate(startDate);
   const end = dr.transformDate(endDate);
-
-  // const start = '02.10.2023';
-  // const end = '09.10.2023';
 
   let getUsersFD = new FormData();
 
