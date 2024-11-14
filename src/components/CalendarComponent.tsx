@@ -6,14 +6,23 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import ruLocale from '@fullcalendar/core/locales/ru';
 import { Box } from '@mui/system';
-import { CalendarComponentProps } from '../types';
+
+/**
+ * Интерфейс для пропсов компонента CalendarComponent.
+ */
+export interface CalendarComponentProps {
+  events: any[]; // Определите более конкретный тип, если возможно
+  selectedDate: string | null;
+  slotMinTime: string;
+  slotMaxTime: string;
+}
 
 const CalendarComponent: React.FC<CalendarComponentProps> = ({
   events,
   selectedDate,
   slotMinTime,
   slotMaxTime,
-  eventContent,
+  // eventContent,
 }) => {
   const style = {
     position: 'absolute' as const,
@@ -27,6 +36,82 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
     boxShadow: 24,
     p: 4,
     height: '85%',
+  };
+
+  const eventContent = (info: { event: { _def: { extendedProps: any; }; title: string; }; }) => {
+    const { extendedProps } = info.event._def;
+
+    // Создаем элементы для отображения
+    const eventContName = document.createElement('span');
+    const eventTaskTitle = document.createElement('span');
+    const eventTaskType = document.createElement(
+      extendedProps.time <= 1 ? 'span' : 'div',
+    );
+    const eventTaskSubType = document.createElement(
+      extendedProps.time <= 1 ? 'span' : 'div',
+    );
+    const eventObject = document.createElement(
+      extendedProps.object && extendedProps.object !== 'Не выбрано'
+        ? 'div'
+        : 'span',
+    );
+    const fullDescription = document.createElement(
+      extendedProps.time <= 1 ? 'span' : 'div',
+    );
+    const methTime = document.createElement('span');
+    const employment = document.createElement(
+      extendedProps.time <= 1 ? 'span' : 'div',
+    );
+    const location = document.createElement(
+      extendedProps.time <= 1 ? 'span' : 'div',
+    );
+
+    // Добавляем классы к элементам, если необходимо
+
+    eventContName.classList.add('factTime');
+    eventTaskTitle.classList.add('title');
+    eventTaskType.classList.add('eventTaskType');
+    eventTaskSubType.classList.add('eventTaskSubType');
+    methTime.classList.add('methTime');
+    employment.classList.add('employment');
+    location.classList.add('location');
+
+    // Вставляем значения
+
+    eventTaskSubType.innerHTML = extendedProps.subTaskType || '';
+    if (extendedProps.methTime && extendedProps.methTime !== '') {
+    }
+    if (extendedProps.object && extendedProps.object !== 'Не выбрано') {
+      eventObject.classList.add('eventObject');
+    }
+    fullDescription.classList.add('fullDescription');
+
+    eventContName.innerHTML = `<b>${extendedProps.time}ч</b>`;
+    eventTaskTitle.innerHTML = info.event.title || '';
+
+    if (extendedProps.object !== 'Не выбрано') {
+      eventObject.innerHTML = extendedProps.object;
+    }
+    eventTaskType.innerHTML = ` ${extendedProps.type}`;
+    eventTaskSubType.innerHTML = extendedProps.subTaskType || '';
+    fullDescription.innerHTML = extendedProps.fullDescription;
+    methTime.innerHTML = ` ${extendedProps.methTime || ''}`;
+    employment.innerHTML = `${extendedProps.employment || ''}`;
+    location.innerHTML = `${extendedProps.location || ''}`;
+
+    const arrayOfDomNodes = [
+      eventContName,
+      eventTaskTitle,
+      employment,
+      location,
+      eventObject,
+      eventTaskType,
+      eventTaskSubType,
+      methTime,
+      fullDescription,
+    ];
+
+    return { domNodes: arrayOfDomNodes };
   };
 
   return (

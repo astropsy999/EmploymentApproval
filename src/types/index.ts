@@ -32,16 +32,7 @@ export interface DateIdMap {
   [date: string]: number;
 }
 
-/**
- * Интерфейс для пропсов компонента CalendarComponent.
- */
-export interface CalendarComponentProps {
-  events: any[]; // Определите более конкретный тип, если возможно
-  selectedDate: string | null;
-  slotMinTime: string;
-  slotMaxTime: string;
-  eventContent: (info: any) => { domNodes: HTMLElement[] };
-}
+
 
 /**
  * Интерфейс для пропсов компонента DataGridComponent.
