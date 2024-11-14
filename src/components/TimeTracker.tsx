@@ -3,10 +3,10 @@ import { Box } from '@mui/system';
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
 import 'ag-grid-enterprise';
-import { AgGridReact } from 'ag-grid-react';
-import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { ColDef } from 'ag-grid-enterprise';
+import React, { memo, useEffect, useRef, useState } from 'react';
+import 'react-toastify/dist/ReactToastify.css';
 import '../assets/css/timetracker.css';
-import { AG_GRID_LOCALE_RU } from '../assets/translations/locale.ru';
 import {
   getLinkedAllUsers,
   getUsersForManagers,
@@ -15,35 +15,32 @@ import {
   multiLockEmloyment,
   multiUnlockEmloyment,
 } from '../data/api';
-import { HtmlRenderer } from '../data/trackerCols.data';
+import { addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
 import { calculateTotalRow } from '../helpers/calculateTotalRows';
 import { customLoader } from '../helpers/customLoader';
+import { formatDateToKey, getDatesInRange } from '../helpers/datesRanges';
+import { deepSearchObject } from '../helpers/deepSearchInObject';
 import { extractNumbersFromValue } from '../helpers/extractNumbersFromValues';
+import { addHalfHour, addMethEventToEvents } from '../helpers/fullCalendarHelpers';
 import { shortenNames } from '../helpers/shortenNames';
+import { toastSuccess } from '../helpers/toastMessages';
 import {
   useFilters,
   useGGridStore,
   useIDs,
   useRange,
 } from '../store/dataStore';
-
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { deepSearchObject } from '../helpers/deepSearchInObject';
-
-import { addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
+import { VacationType } from '../types/enums';
+import AgGridTable from './AgGridTable';
 import { ToggleMessages } from './Buttons/ToggleMessages';
+import CalendarComponent from './CalendarComponent';
 import { LockEmploymentModal } from './Modals/LockEmploymentModal';
 import { SubmitEmploymentModal } from './Modals/SubmitEmploymentModal';
 import { UnlockEmploymentModal } from './Modals/UnlockEmploymentModal';
-import { CellClickedEvent, FirstDataRenderedEvent } from 'ag-grid-community';
-import { ColDef } from 'ag-grid-enterprise';
-import { formatDateToKey, getDatesInRange } from '../helpers/datesRanges';
-import { VacationType } from '../types/enums';
-import CalendarComponent from './CalendarComponent';
 import Toolbar from './Toolbar';
 import { CalendarEvent } from './types';
-import { toastSuccess } from '../helpers/toastMessages';
+import { CellClickedEvent, FirstDataRenderedEvent } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
 
 const TimeTracker = memo(() => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -74,7 +71,7 @@ const TimeTracker = memo(() => {
 
   const { setGGridRef, ggridRef } = useGGridStore();
 
-  const overlayLoadingTemplate = `<div></div>`;
+  
 
   const [open, setOpen] = useState(false);
   const [openSubmit, setOpenSubmit] = useState(false);
@@ -103,9 +100,7 @@ const TimeTracker = memo(() => {
   }
   };
 
-  const [components] = useState({
-    htmlRenderer: HtmlRenderer,
-  });
+  
 
   // Обработчик события firstDataRendered
 
@@ -251,20 +246,6 @@ const TimeTracker = memo(() => {
     },
   };
 
-  const localeText = useMemo(() => {
-    return AG_GRID_LOCALE_RU;
-  }, [AG_GRID_LOCALE_RU]);
-
-  // DefaultColDef sets props common to all Columns
-  const defaultColDef = useMemo(() => ({
-    sortable: true,
-    resizable: true,
-    autoHeight: true,
-    width: undefined,
-    sizeColumnsToFit: true,
-    cellDataType: false,
-  }), []);
-
   const eventContent = (info: { event: { _def: { extendedProps: any; }; title: string; }; }) => {
     const { extendedProps } = info.event._def;
 
@@ -403,31 +384,8 @@ const TimeTracker = memo(() => {
         eventsWithMethods.filter((str) => str[objid]),
       );
 
-      const addMethEventToEvents = (evMethObjID: any[]) => {
-        evMethObjID.forEach((ev) => {
-          const mergedEventMeth: any = {};
-          let metStr = '';
-          ev.forEach((methEv: CalendarEvent) => {
-            const methEv0 = Object.values(methEv)[0];
-            mergedEventMeth['employment'] = methEv0?.employment;
-            mergedEventMeth['title'] = methEv0.title;
-            mergedEventMeth['start'] = methEv0.start;
-            mergedEventMeth['end'] = methEv0.end;
-            mergedEventMeth['fullDescription'] = methEv0.fullDescription;
-            mergedEventMeth['globTime'] = methEv0.globTime;
-            mergedEventMeth['object'] = methEv0.object;
-            mergedEventMeth['type'] = methEv0.type;
-            mergedEventMeth['subTaskType'] = methEv0.subType;
-            mergedEventMeth['time'] = methEv0.globTime;
-            mergedEventMeth['location'] = methEv0.location;
-            mergedEventMeth['employment'] = methEv0.employment;
-
-            metStr += `${methEv0.meth}-${methEv0.time}, `;
-          });
-          events.push({ ...mergedEventMeth, methTime: metStr });
-        });
-      };
-      addMethEventToEvents(eventsMethObjID);
+      
+      addMethEventToEvents(eventsMethObjID, events);
 
       const sortedEvents =
         events.length ?
@@ -441,32 +399,6 @@ const TimeTracker = memo(() => {
 
         const lastEventEndTime =
           sortedEvents[sortedEvents.length - 1]?.end?.split('T')[1];
-
-        const addHalfHour = (timeString: string) => {
-          const timeParts = timeString?.split(':');
-          const dateObj = new Date();
-          if (timeParts) {
-            dateObj.setHours(parseInt(timeParts[0]));
-            dateObj.setMinutes(parseInt(timeParts[1]));
-            dateObj.setSeconds(parseInt(timeParts[2]));
-            dateObj.setMinutes(dateObj.getMinutes() + 15);
-          }
-
-          const newTimeString = dateObj.toLocaleTimeString('ru-RU');
-          return newTimeString;
-        };
-
-        const subtractHalfHour = (timeString: string) => {
-          const timeParts = timeString.split(':');
-          const dateObj = new Date();
-          dateObj.setHours(parseInt(timeParts[0]));
-          dateObj.setMinutes(parseInt(timeParts[1]));
-          dateObj.setSeconds(parseInt(timeParts[2]));
-          dateObj.setMinutes(dateObj.getMinutes() - 30);
-
-          const newTimeString = dateObj.toLocaleTimeString('ru-RU');
-          return newTimeString;
-        };
 
         setSlotMinTime(firstEventStartTime);
         setSlotMaxTime(addHalfHour(lastEventEndTime));
@@ -502,21 +434,6 @@ const TimeTracker = memo(() => {
       updateStateOfNewData(rowData);
     });
   }, []);
-
-  // const style = {
-  //   position: 'absolute',
-  //   top: '50%',
-  //   left: '50%',
-  //   transform: 'translate(-50%, -50%)',
-  //   width: 800,
-  //   bgcolor: 'background.paper',
-  //   border: '1px solid lighttgray',
-  //   borderRadius: '10px',
-  //   boxShadow: 24,
-  //   p: 4,
-  //   height: '85%',
-  // };
-
 
   const handleCloseSubmit = () => {
     setOpenSubmit(false);
@@ -583,11 +500,6 @@ const TimeTracker = memo(() => {
     ggridRef.sizeColumnsToFit();
   };
 
-  const onRowSelected = () => {
-    // const selectedUsers = ggridRef.getSelectedRows();
-
-  };
-
   return (
     <>
       <Modal open={open} onClose={handleCloseModal}>
@@ -614,12 +526,10 @@ const TimeTracker = memo(() => {
           gridApi={gridApiRef.current !== null ? gridApiRef.current : undefined}
           handleAction={handleAction}
           handleCloseSubmitLock={handleCloseSubmitLock}
-          toastSuccess={toastSuccess}
           updateStateOfNewData={updateStateOfNewData}
           loading={loading}
-          setLoading={setLoading} hasUnsubmitted={false} toastError={function (message: string): void {
-            throw new Error('Function not implemented.');
-          } }        />
+          setLoading={setLoading} 
+          />
       </Dialog>
       <Dialog onClose={handleCloseSubmitUnlock} open={openSubmitUnlock}>
         <UnlockEmploymentModal
@@ -638,41 +548,16 @@ const TimeTracker = memo(() => {
         />
         <ToggleMessages />
       </Box>
-
-      <div
-        className="ag-theme-alpine"
-        style={{ width: '99%%', height: '85vh' }}
-      >
-        <AgGridReact
-          ref={gridRef}
-          onGridReady={onGridReady}
-          rowData={rowData}
-          columnDefs={columnDefs}
-          localeText={localeText}
-          defaultColDef={defaultColDef}
-          rowSelection="multiple"
-          onCellClicked={cellClickedListener}
-          components={components}
-          suppressLastEmptyLineOnPaste={true}
-          //@ts-ignore
-          gridOptions={gridOptions}
-          suppressColumnVirtualisation={true}
-          suppressRowVirtualisation={true}
-          aggregateOnlyChangedColumns={true}
-          detailRowAutoHeight={true}
-          overlayLoadingTemplate={overlayLoadingTemplate}
-          columnHoverHighlight={true}
-          excludeHiddenColumnsFromQuickFilter
-          suppressContextMenu={true}
-          colResizeDefault={'shift'}
-          enablePivot={true}
-          rowMultiSelectWithClick={true}
-          suppressRowClickSelection={true}
-          onRowSelected={onRowSelected}
-          onFilterOpened={onFilterOpened}
-          suppressScrollOnNewData={true}
-        />
-      </div>
+      <AgGridTable
+          gridRef={gridRef} 
+          onGridReady={onGridReady} 
+          rowData={rowData} 
+          columnDefs={columnDefs} 
+          cellClickedListener={cellClickedListener}
+          //@ts-ignore 
+          gridOptions={gridOptions} 
+          onFilterOpened={onFilterOpened} 
+      />
     </>
   );
 });

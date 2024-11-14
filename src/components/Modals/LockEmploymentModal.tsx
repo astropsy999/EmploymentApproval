@@ -25,6 +25,7 @@ import ModalHeader from './ModalHeader';
 import SelectedEmployeesList from './SelectedEmployeesList';
 import { SubmitBeforeLockPopover } from './SubmitBeforeLockPopover';
 import { deepSearchObject } from '../../helpers/deepSearchInObject';
+import { toastSuccess } from '../../helpers/toastMessages';
 
 
 
@@ -38,9 +39,6 @@ interface LockEmploymentModalProps {
     actionType: 'approve' | 'lock' | 'unlock',
     dataArray: FioIdsArray[]
   ) => Promise<void>;
-  hasUnsubmitted: boolean;
-  toastSuccess: (message: string) => void;
-  toastError: (message: string) => void;
   updateStateOfNewData: (rowData: any) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
@@ -50,8 +48,6 @@ export const LockEmploymentModal: React.FC<LockEmploymentModalProps> = ({
   gridApi,
   handleCloseSubmitLock,
   handleAction,
-  // hasUnsubmitted,
-  toastSuccess,
   updateStateOfNewData,
   loading,
   setLoading,

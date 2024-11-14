@@ -4,7 +4,7 @@ import 'flatpickr/dist/themes/material_blue.css';
 import Flatpickr from 'react-flatpickr';
 import '../assets/css/timetracker.css?inline';
 import { getUsersForManagers } from '../data/api';
-import { getColumnDefs } from '../data/trackerCols.data';
+import { getColumnDefs } from '../data/columnDefs';
 import { useGGridStore, useIDs, useRange } from '../store/dataStore';
 import { customLoader } from './customLoader';
 import { useEffect, useRef } from 'react';
@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Tooltip from '@mui/material/Tooltip';
+import React from 'react';
 
 export function DatePicker() {
   // Используйте текущую дату или другое значение по умолчанию
@@ -36,11 +37,11 @@ export function DatePicker() {
 
   const { setUsersSavedMessagesDates, setNamesDatesDayIDsObj } = useIDs();
 
-  const fp = useRef(null);
+  const fp = useRef<Flatpickr>(null);
 
   const { ggridRef } = useGGridStore();
 
-  const changeDateHandler = ([start, end]) => {
+  const changeDateHandler = ([start, end]: Date[]) => {
     setUsersSavedMessagesDates({});
     setMessageColumnVisible(false);
     // Определяем начало и конец текущей недели
@@ -56,7 +57,7 @@ export function DatePicker() {
       // Закрыть окно календаря после выбора даты
       if (fp) {
         setTimeout(() => {
-          fp.current.flatpickr.close();
+          fp?.current?.flatpickr.close();
         }, 1000);
       }
     }
@@ -67,7 +68,7 @@ export function DatePicker() {
     // Проверяем наличие значений startDate и endDate
     if (startOfWeek && endOfWeek) {
       // Запускаем функцию загрузки данных
-      getUsersForManagers(startOfWeek, endOfWeek).then((rowData) => {
+      getUsersForManagers(startOfWeek, endOfWeek).then((rowData: any) => {
         setRowData(rowData[0]);
         setObjectsArr(rowData[1]);
         setTypesArr(rowData[2]);
@@ -114,10 +115,10 @@ export function DatePicker() {
   useEffect(() => {
     const columnDefs = ggridRef?.getColumnDefs();
 
-    const totalRowData = {};
+    const totalRowData: any = {};
 
     // перебираем все колонки
-    columnDefs?.forEach((colDef) => {
+    columnDefs?.forEach((colDef: { colId: string; field: any; }) => {
       if (
         colDef.colId !== 'ФИО' &&
         colDef.colId !== 'СООБЩЕНИЕ' &&
@@ -126,21 +127,23 @@ export function DatePicker() {
         const fieldName = colDef.field;
         const columnValues = ggridRef
           .getModel()
-          .rowsToDisplay.map((rowNode) => rowNode.data[fieldName]);
+          .rowsToDisplay.map((rowNode: { data: { [x: string]: any; }; }) => rowNode.data[fieldName]);
 
         // суммируем все значения колонки
 
-        const total = columnValues.reduce((acc, val) => {
+        const total = columnValues.reduce((acc: number, val: string | undefined) => {
           const regex = /<span class="factTime"><b>([\d.]+)ч<\/b><\/span>/g;
           if (val !== '' && val !== undefined) {
             const matches = val.match(regex);
             if (matches && matches.length !== 0) {
               for (const match of matches) {
-                const parsedNum = parseFloat(match.match(/([\d.]+)ч/)[1]);
+                //@ts-ignore
+                const parsedNum = parseFloat(match?.match(/([\d.]+)ч/)[1]);
 
                 if (!isNaN(parsedNum)) {
                   acc += parsedNum;
                 }
+                
               }
             }
           }
@@ -176,7 +179,7 @@ export function DatePicker() {
       <Tooltip title="Предыдущая неделя" arrow>
         <Button
           onClick={loadPreviousWeek}
-          variant="filled"
+          variant="contained"
           sx={buttonStyle}
           color="primary"
         >
@@ -212,7 +215,7 @@ export function DatePicker() {
         onChange={changeDateHandler}
       />
       <Tooltip title="Следующая неделя" arrow>
-        <Button variant="filled" sx={buttonStyle} onClick={loadNextWeek}>
+        <Button variant="contained" sx={buttonStyle} onClick={loadNextWeek}>
           <ArrowForwardIosIcon sx={{ fontSize: 30 }} />
         </Button>
       </Tooltip>
