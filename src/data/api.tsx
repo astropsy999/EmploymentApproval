@@ -1,13 +1,13 @@
 import ky from 'ky';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { checkIcon } from '../helpers/checkIcon';
 import { customLoader } from '../helpers/customLoader';
 import * as dr from '../helpers/datesRanges';
 import { filterDataByDates } from '../helpers/filterDataByDateForLocking';
 import { PreparedData } from '../helpers/getInfoOfSelectedUsers';
 import { DateIdMap } from '../types';
 import * as e from './endpoints';
+import { generateEventHTML, generateEventWithMethodsHTML } from '../helpers/generateHTML';
 
 
 
@@ -204,7 +204,7 @@ export const getLinkedAllUsers = async () => {
  * @returns {tableDataArr, objectsArr, typesArr, divesArr, eventsDataFioObjNew, subTypesArr}
  */
 
-export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
+export const getUsersForManagers = async (startDate: Date, endDate: Date): Promise<any> => {
   console.log('getUsersForManagers ЗАПУСК');
   namesDatesDayIDsObj = {};
   usersSavedMessagesDates = {};
@@ -213,7 +213,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
 
   customLoader(true);
 
-  const linkedUsers = await getLinkedUsers();
+  await getLinkedUsers();
 
   const start = dr.transformDate(startDate);
   const end = dr.transformDate(endDate);
@@ -293,7 +293,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
   };
 
   // Собираем ФИО, iDDb, dayIDs, isBlocked
-  res.map((item: any[]) => {
+  res.forEach((item: any[]) => {
     const name = item[2].Value;
     const date = item[7].Value;
     const id = item[7].ObjID;
@@ -368,7 +368,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
   let eventsDataFioObj: any = {};
 
   // На основе собранных уникальных ФИО выгребаем данные для каждого человека на каждую дату и собираем для отрисовки в таблице
-  namesArr.map((name: any) => {
+  namesArr.forEach((name: any) => {
     const nameArray = res.filter((item: { Value: unknown; }[]) => item[2].Value === name);
     let division;
     let position;
@@ -376,7 +376,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
 
     let total = 0;
 
-    nameArray.map((nameA: any[]) => {
+    nameArray.forEach((nameA: any[]) => {
       const date = nameA[7].Value;
       const object = nameA[13].Value;
       const time = nameA[17].Value;
@@ -542,74 +542,30 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
     });
 
     // [{},{},{}] => ''
-    const transformMethArr = (methArr: any[]) => {
+    const transformMethArr = (methArr:any) => {
       let finData = `<div class="methsWrapper">`;
-      let totalDayTime = 0;
-      let globTime;
-      let isVacation = false;
-      const isObjecSelected = (objectSelected: any) => {
-        if (objectSelected) {
-          return `<span class="eventObject">${objectSelected}</span>`;
-        } else {
-          return '';
-        }
-      };
-      let currObjIDArr: { [x: number]: any; }[] = [];
-      let fullEventsWithMets = {};
+      let currObjIDArr: any = [];
       let objStrMeth = '';
-      methArr.map((obj: { title: string; meth: any; objID: any; dayID: any; time: any; location: any; object: any; type: any; subType: any; isApproved: any; globTime: any; employment: string; }) => {
-        const onVacation =
-          obj.title === 'Отпуск' ||
-          obj.title === 'Больничный' ||
-          obj.title === 'Выходной';
+    
+      methArr.forEach((obj: any) => {
+        const onVacation = ['Отпуск', 'Больничный', 'Выходной'].includes(obj.title);
+    
         if (!obj.meth) {
-          objStrMeth = `<div class="objWrapper fc-event-main fc-event" objID="${
-            obj.objID
-          }" dayID="${obj.dayID}">
-              <span class="factTime"><b>${obj.time}ч</b></span>
-              <span class="title">${obj.title}</span>
-              <div class="objLocationWrapper">${
-                !onVacation
-                  ? `<div style="margin-bottom:3px">
-                    <span class="location">${obj.location}</span>
-                  </div>`
-                  : ''
-              } ${isObjecSelected(obj.object)}</div>
-              <div class="eventTaskType">${obj.type}</div>
-              <div class="eventTaskSubType">${obj.subType}</div>
-               ${
-                 obj.isApproved
-                   ? `<span class="approved" title="${obj.isApproved}">${checkIcon}</span>`
-                   : ''
-               }
-             </div>`;
+          objStrMeth = generateEventHTML(obj, onVacation);
         } else {
           currObjIDArr.push({ [obj.objID]: obj });
         }
-
-        totalDayTime += Number(obj.time);
-        globTime = Number(obj.globTime);
-        if (
-          obj.employment &&
-          (obj.employment === 'Отпуск' ||
-            obj.employment === 'Больничный' ||
-            obj.employment === 'Выходной')
-        ) {
-          isVacation = true;
-        }
-
+    
         if (currObjIDArr.length === 0) {
           finData += objStrMeth;
         }
       });
-
+    
       if (currObjIDArr.length !== 0) {
-        let objStrWithMeths = '';
-
-        const generateEventsWithMethods = (arr: any[]) => {
+        const generateEventsWithMethods = (arr: any) => {
           const methodDataMap: any = {};
-
-          arr.forEach((item: { [x: string]: any; hasOwnProperty: (arg0: string) => any; }) => {
+    
+          arr.forEach((item: any) => {
             for (const method in item) {
               if (item.hasOwnProperty(method)) {
                 if (!methodDataMap[method]) {
@@ -619,87 +575,50 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date) => {
               }
             }
           });
-
-          for (let methodEv in methodDataMap) {
+    
+          for (const methodEv in methodDataMap) {
             if (methodDataMap.hasOwnProperty(methodEv)) {
-              const resultObject = methodDataMap[methodEv].reduce(
-                (acc: { [x: string]: any; meth: any[]; methObj: any[]; methZones: any[]; time: any[]; hasOwnProperty: (arg0: string) => any; }, obj: { [x: string]: any; meth: any; methObj: any; methZones: any; time: any; }) => {
-                  const { meth, methObj, methZones, time, ...rest } = obj;
-
-                  if (!acc.meth) {
-                    acc.meth = [meth];
-                    acc.methObj = [methObj];
-                    acc.methZones = [methZones];
-                    acc.time = [time];
-                  } else {
-                    acc.meth.push(meth);
-                    acc.methObj.push(methObj);
-                    acc.methZones.push(methZones);
-                    acc.time.push(time);
-                  }
-
-                  for (const key in rest) {
-                    if (acc.hasOwnProperty(key)) {
-                      if (acc[key] !== rest[key]) {
-                        throw new Error(`Inconsistent values for key ${key}`);
-                      }
-                    } else {
-                      acc[key] = rest[key];
+              const resultObject = methodDataMap[methodEv].reduce((acc: any, obj: any) => {
+                const { meth, methObj, methZones, time, ...rest } = obj;
+    
+                if (!acc.meth) {
+                  acc.meth = [meth];
+                  acc.methObj = [methObj];
+                  acc.methZones = [methZones];
+                  acc.time = [time];
+                } else {
+                  acc.meth.push(meth);
+                  acc.methObj.push(methObj);
+                  acc.methZones.push(methZones);
+                  acc.time.push(time);
+                }
+    
+                for (const key in rest) {
+                  if (acc.hasOwnProperty(key)) {
+                    if (acc[key] !== rest[key]) {
+                      throw new Error(`Inconsistent values for key ${key}`);
                     }
+                  } else {
+                    acc[key] = rest[key];
                   }
-
-                  return acc;
-                },
-                {},
-              );
-
-              const methodsView = (meth: any[], methObj: { [x: string]: any; }, methZones: { [x: string]: any; }, methTime: { [x: string]: any; }) => {
-                let metViewObj = ''; // ВО-1ч(об-1,зон-3)
-
-                meth.map((item: any, i: string | number) => {
-                  const methName = item;
-                  const time = methTime[i];
-                  const obj = methObj[i];
-                  const zones = methZones[i];
-
-                  metViewObj += `<span style="white-space: nowrap;">${methName}-${time}ч (об-${obj}, зон-${zones})</span><br>`;
-                });
-
-                return metViewObj;
-              };
-
-              objStrWithMeths = `<div class="objWrapper fc-event-main fc-event" objID="${
-                resultObject.objID
-              }" dayID="${resultObject.dayID}">
-                <span class="factTime"><b>${resultObject.globTime}ч</b></span>
-                <span class="title">${resultObject.title}</span>
-                <div class="objLocationWrapper"><div style='margin-bottom:3px'><span class="location">${
-                  resultObject.location
-                }</span></div> ${isObjecSelected(resultObject.object)}</div>
-              <div class="eventTaskType">${resultObject.type}</div>
-              <div class="eventTaskSubType">${resultObject.subType}</div>
-              <div class="meths">${methodsView(
-                resultObject.meth,
-                resultObject.methObj,
-                resultObject.methZones,
-                resultObject.time,
-              )}</div>
-              ${
-                resultObject.isApproved
-                  ? `<span class="approved" title="${resultObject.isApproved}">${checkIcon}</span>`
-                  : ''
-              }
-              </div>`;
+                }
+    
+                return acc;
+              }, {});
+    
+              finData += generateEventWithMethodsHTML(resultObject);
             }
-            finData += objStrWithMeths;
           }
         };
+    
         generateEventsWithMethods(currObjIDArr);
+    
         if (!finData.includes(objStrMeth)) {
           finData += objStrMeth;
         }
       }
-
+    
+      finData += `</div>`;
       return finData;
     };
 
