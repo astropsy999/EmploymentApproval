@@ -1,4 +1,4 @@
-import { Dialog, Modal, Stack } from '@mui/material';
+import { Dialog, Modal } from '@mui/material';
 import { Box } from '@mui/system';
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
@@ -18,7 +18,6 @@ import {
 import { HtmlRenderer } from '../data/trackerCols.data';
 import { calculateTotalRow } from '../helpers/calculateTotalRows';
 import { customLoader } from '../helpers/customLoader';
-import { DatePicker } from '../helpers/datePicker';
 import { extractNumbersFromValue } from '../helpers/extractNumbersFromValues';
 import { shortenNames } from '../helpers/shortenNames';
 import {
@@ -33,22 +32,18 @@ import 'react-toastify/dist/ReactToastify.css';
 import { deepSearchObject } from '../helpers/deepSearchInObject';
 
 import { addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
-import { ApproveButton } from './Buttons/ApproveButton';
-import { LockButton } from './Buttons/LockButton';
-import { ReloadButton } from './Buttons/ReloadButton';
 import { ToggleMessages } from './Buttons/ToggleMessages';
-import { UnlockButton } from './Buttons/UnlockButton';
 import { LockEmploymentModal } from './Modals/LockEmploymentModal';
 import { SubmitEmploymentModal } from './Modals/SubmitEmploymentModal';
 import { UnlockEmploymentModal } from './Modals/UnlockEmploymentModal';
-
+import { CellClickedEvent, FirstDataRenderedEvent } from 'ag-grid-community';
+import { ColDef } from 'ag-grid-enterprise';
+import { formatDateToKey, getDatesInRange } from '../helpers/datesRanges';
 import { VacationType } from '../types/enums';
 import CalendarComponent from './CalendarComponent';
-import { ColDef } from 'ag-grid-enterprise';
-import { CellClickedEvent, FirstDataRenderedEvent } from 'ag-grid-community';
-import { formatDateToKey, getDatesInRange } from '../helpers/datesRanges';
-import { CalendarEvent } from './types';
 import Toolbar from './Toolbar';
+import { CalendarEvent } from './types';
+import { toastSuccess } from '../helpers/toastMessages';
 
 const TimeTracker = memo(() => {
   const gridRef = useRef<AgGridReact<any>>(null);
@@ -90,7 +85,6 @@ const TimeTracker = memo(() => {
   const [slotMinTime, setSlotMinTime] = useState('07:00:00');
   const [slotMaxTime, setSlotMaxTime] = useState('22:00:00');
   const [loading, setLoading] = useState(false);
-  // const [hasUnsubmitted, setHasUmsubmitted] = useState(true);
 
   const onGridColumnsChanged = (columnDefs: ColDef[]) => {
     const totalColumnDef = columnDefs?.find(
@@ -346,20 +340,6 @@ const TimeTracker = memo(() => {
 
     return { domNodes: arrayOfDomNodes };
   };
-
-  // const eventTimeFormat = {
-  //   hour: 'numeric',
-  //   minute: '2-digit',
-  //   meridiem: false,
-  // };
-
-  // const slotLabelFormat = {
-  //   hour: 'numeric',
-  //   minute: '2-digit',
-  //   omitZeroMinute: false,
-  //   meridiem: false,
-  // };
-
   // При клике на ячейку таблицы
   const cellClickedListener = (event: CellClickedEvent) => {
     if (event.colDef.field === 'ФИО') {
@@ -523,19 +503,19 @@ const TimeTracker = memo(() => {
     });
   }, []);
 
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 800,
-    bgcolor: 'background.paper',
-    border: '1px solid lighttgray',
-    borderRadius: '10px',
-    boxShadow: 24,
-    p: 4,
-    height: '85%',
-  };
+  // const style = {
+  //   position: 'absolute',
+  //   top: '50%',
+  //   left: '50%',
+  //   transform: 'translate(-50%, -50%)',
+  //   width: 800,
+  //   bgcolor: 'background.paper',
+  //   border: '1px solid lighttgray',
+  //   borderRadius: '10px',
+  //   boxShadow: 24,
+  //   p: 4,
+  //   height: '85%',
+  // };
 
 
   const handleCloseSubmit = () => {
@@ -561,18 +541,6 @@ const TimeTracker = memo(() => {
 
   const handleCloseModal = () => {
     setOpen(false);
-  };
-
-  const toastSuccess = (message: string) => {
-    toast.success(message, {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      progress: undefined,
-      theme: 'colored',
-    });
   };
 
   const handleAction = async (actionType: string, dataArray: any[]) => {
