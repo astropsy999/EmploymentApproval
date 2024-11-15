@@ -1,4 +1,5 @@
 import { CalendarEvent } from "../components/types";
+import { initialsStr } from "./textsHelpers";
 
 /**
  * @description
@@ -12,7 +13,7 @@ import { CalendarEvent } from "../components/types";
  *                                   добавляться события.
  * @returns {void}
  */
-export const addMethEventToEvents = (evMethObjID: any[], events: CalendarEvent[]) => {
+export const addMethEventToEvents = (evMethObjID: any[], events: CalendarEvent[]): void => {
     evMethObjID.forEach((ev) => {
       const mergedEventMeth: any = {};
       let metStr = '';
@@ -32,8 +33,12 @@ export const addMethEventToEvents = (evMethObjID: any[], events: CalendarEvent[]
         mergedEventMeth['employment'] = methEv0.employment;
         mergedEventMeth['isBrigadier'] = methEv0.isBrigadier;
         mergedEventMeth['brigadeList'] = methEv0.brigadeList;
+        mergedEventMeth['methObj'] = methEv0.methObj;
+        mergedEventMeth['methZones'] = methEv0.methZones;
 
-        metStr += `${methEv0.meth}-${methEv0.time}, `;
+        metStr += `<b><div class="methTitle">${methEv0.meth}</div> <i class="fa fa-arrow-right" aria-hidden="true"></i> ${methEv0.time}ч</b> 
+        ${(methEv0.methObj || methEv0.methZones) && `(${methEv0.methObj && methEv0.methObj > 0 && `об-${methEv0.methObj},`} ${methEv0.methZones && methEv0.methZones > 0 && `зон-${methEv0.methZones}`})`}
+        ${methEv0.isBrigadier === 'Да' ? `<i class="fa fa-user" aria-hidden="true" style="font-size: 12px; color: #1862c6"></i>` : ''} ${methEv0.brigadeList ? `<span class="brigadeList">[${initialsStr(methEv0.brigadeList)}]</span>` : ''}<br>`;
       });
       events.push({ ...mergedEventMeth, methTime: metStr });
     });

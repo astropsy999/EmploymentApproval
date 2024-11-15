@@ -245,7 +245,6 @@ const TimeTracker = memo(() => {
 
   // При клике на ячейку таблицы
   const cellClickedListener = (event: CellClickedEvent) => {
-    console.log("🚀 ~ cellClickedListener ~ event:", event)
     if (event.colDef.field === 'ФИО') {
       if (!event.node.isSelected()) {
         event.node.setSelected(true);
@@ -320,11 +319,11 @@ const TimeTracker = memo(() => {
           return startDate - endDate;
         }): [];
       if (sortedEvents.length > 0) {
-        const firstEventStartTime = sortedEvents[0].start.split('T')[1];
+        const firstEventStartTime = sortedEvents[0]?.start?.split('T')[1];
 
         const lastEventEndTime =
           sortedEvents[sortedEvents.length - 1]?.end?.split('T')[1];
-
+        if (!firstEventStartTime && !lastEventEndTime) return
         setSlotMinTime(firstEventStartTime);
         setSlotMaxTime(addHalfHour(lastEventEndTime));
       }

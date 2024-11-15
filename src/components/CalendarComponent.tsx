@@ -23,7 +23,6 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
   selectedDate,
   slotMinTime,
   slotMaxTime,
-  // eventContent,
 }) => {
   const style = {
     position: 'absolute' as const,
@@ -41,7 +40,6 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
 
   const eventContent = (info: any) => {
     const { extendedProps } = info.event._def;
-    console.log("🚀 ~ eventContent ~ info.event:", info.event)
   
     // Создаем элементы для отображения
     const eventContName = document.createElement('span');
@@ -104,12 +102,12 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
 
     
 
-    if (extendedProps.brigadeList) {
-      if (extendedProps.isBrigadier === 'Да') {
-        isBrigadierElement.innerHTML = `<i class="fa fa-user" aria-hidden="true" style="font-size: 12px; color: #1862c6"></i>`;
-      }
-      brigadeListElement.innerHTML = `[${initialsStr(extendedProps.brigadeList)}]`;
-    }
+    // if (extendedProps.brigadeList) {
+    //   if (extendedProps.isBrigadier === 'Да') {
+    //     isBrigadierElement.innerHTML = `<i class="fa fa-user" aria-hidden="true" style="font-size: 12px; color: #1862c6"></i>`;
+    //   }
+    //   brigadeListElement.innerHTML = `[${initialsStr(extendedProps.brigadeList)}]`;
+    // }
   
     
   
@@ -123,8 +121,8 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
       eventTaskType,
       eventTaskSubType,
       methTime,
-      isBrigadierElement,
-      brigadeListElement, 
+      // isBrigadierElement,
+      // brigadeListElement, 
       fullDescription,
     ];
   
