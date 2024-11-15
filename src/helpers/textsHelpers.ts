@@ -20,7 +20,6 @@ export function initials(str: string) {
  * @returns Строка с ФИО в формате "Иванов И.И., Петров П.П."
  */
 export function initialsStr(str: string): string {
-  console.log("🚀 ~ initialsStr ~ str:", str)
   // Разбиваем строку на отдельные ФИО по запятым
   return str?.split(',')
       .map(fullName => {
@@ -40,8 +39,6 @@ export function initialsStr(str: string): string {
           if (patronymic) {
               initials += `${patronymic.charAt(0).toUpperCase()}.`;
           }
-          console.log("🚀 ~ initialsStr ~ initials:", initials)
-
           return initials;
       })
       .join(', ');
