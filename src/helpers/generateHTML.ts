@@ -54,16 +54,17 @@ export const generateEventWithMethodsHTML = (resultObject: any) => {
           resultObject.methZones,
           resultObject.time
         )}</div>
+         
         ${
             resultObject.brigadeList
-              ? `<div class="brigadeList" style='width: 100%;'>[${resultObject.brigadeList}]</div>`
-              : ''
-          }
-          ${
+              ? `<div class="brigadeList" style='width: 100%;'>${
             resultObject.isBrigadier
-              ? `<div class="isBrigadier">Бригадир: ${resultObject.isBrigadier}</div>`
+              ? `<span class="isBrigadier">${resultObject.isBrigadier === 'Да' ? `<i class="fa fa-user" aria-hidden="true"></i>` : '' }</span>`
+              : ''
+          }[${resultObject.brigadeList}]</div>`
               : ''
           }
+         
         ${
           resultObject.isApproved
             ? `<span class="approved" title="${resultObject.isApproved}">${checkIcon}</span>`

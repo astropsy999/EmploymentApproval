@@ -6,6 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import ruLocale from '@fullcalendar/core/locales/ru';
 import { Box } from '@mui/system';
+import { initialsStr } from '../helpers/textsHelpers';
 
 /**
  * Интерфейс для пропсов компонента CalendarComponent.
@@ -100,13 +101,17 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
     }
   
     // **Устанавливаем значения для новых элементов**
+
+    
+
     if (extendedProps.brigadeList) {
-      brigadeListElement.innerHTML = `[${extendedProps.brigadeList}]`;
+      if (extendedProps.isBrigadier === 'Да') {
+        isBrigadierElement.innerHTML = `<i class="fa fa-user" aria-hidden="true" style="font-size: 12px; color: #1862c6"></i>`;
+      }
+      brigadeListElement.innerHTML = `[${initialsStr(extendedProps.brigadeList)}]`;
     }
   
-    if (extendedProps.isBrigadier) {
-      isBrigadierElement.innerHTML = `Бригадир: ${extendedProps.isBrigadier}`;
-    }
+    
   
     // Обновляем массив элементов для отображения
     const arrayOfDomNodes = [
@@ -118,8 +123,8 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
       eventTaskType,
       eventTaskSubType,
       methTime,
-      brigadeListElement,    // Добавляем brigadeListElement
-      isBrigadierElement,    // Добавляем isBrigadierElement
+      isBrigadierElement,
+      brigadeListElement, 
       fullDescription,
     ];
   

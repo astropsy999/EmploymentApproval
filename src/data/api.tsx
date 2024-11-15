@@ -8,6 +8,7 @@ import { PreparedData } from '../helpers/getInfoOfSelectedUsers';
 import { DateIdMap } from '../types';
 import * as e from './endpoints';
 import { generateEventHTML, generateEventWithMethodsHTML } from '../helpers/generateHTML';
+import { initialsStr } from '../helpers/textsHelpers';
 
 
 
@@ -378,202 +379,6 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date): Promi
 
     let total = 0;
 
-    // nameArray.forEach((nameA: any[]) => {
-    //   const date = nameA[7].Value;
-    //   const object = nameA[13].Value;
-    //   const time = nameA[17].Value;
-    //   const location = nameA[23].Value;
-    //   const meth = nameA[24].Value;
-    //   const timeOnObj = nameA[25].Value;
-    //   const title = nameA[12].Value;
-    //   const start = nameA[21].Value;
-    //   const end = nameA[22].Value;
-    //   const fullDescription = nameA[16].Value;
-    //   const employment = nameA[30].Value;
-    //   const subTaskTypeNew = nameA[31].Value;
-    //   const taskTypeNew = nameA[29].Value;
-    //   const objID = nameA[10].ObjID;
-    //   const methObj = nameA[26].Value;
-    //   const methZones = nameA[27].Value;
-    //   const isApproved = nameA[34].Value;
-    //   const isBlocked = nameA[33].Value;
-    //   const dayID = nameA[7].ObjID;
-    //   const brigadeList = nameA[39].Value;
-    //   const isBrigadier = nameA[40].Value;
-
-    //   // Добавляем проверку метода
-    //   const isRKMethod = meth === 'РК (Классический)' || meth === 'РК (ЦРГ)';
-
-     
-
-
-    //   const toFullcalFormat = (erpdate: string) => {
-    //     //01.06.2018 11','30 => 2018-06-01T11','30','00
-    //     // Разбиваем строку даты на отдельные части
-    //     const parts = erpdate.split(' ');
-    //     const date = parts[0];
-    //     const time = parts[1];
-
-    //     // Разбиваем дату на отдельные компоненты
-    //     const dateParts = date.split('.');
-    //     const day = dateParts[0].padStart(2, '0');
-    //     const month = dateParts[1].padStart(2, '0');
-    //     const year = dateParts[2];
-
-    //     // Собираем дату и время в нужном формате
-    //     const fullCalDate = `${year}-${month}-${day}T${time}:00`;
-
-    //     return fullCalDate;
-    //   };
-
-    //   let startDateTime;
-    //   let endDateTime;
-
-    //   if (start && end) {
-    //     startDateTime = toFullcalFormat(start);
-    //     endDateTime = toFullcalFormat(end);
-    //   }
-
-    //   division = nameA[5].Value;
-    //   position = nameA[32].Value;
-
-    //   // Объект
-    //   if (object && object != '') {
-    //     objectsArray.push(object);
-    //   }
-
-    //   //Вид работ
-    //   if (taskTypeNew && taskTypeNew != '') {
-    //     typesArray.push(taskTypeNew);
-    //   }
-
-    //   // Подвид работ
-    //   if (subTaskTypeNew && subTaskTypeNew != '') {
-    //     taskSubtypeArr.push(subTaskTypeNew);
-    //   }
-
-    //   // Подразделение
-    //   if (division && division != '') {
-    //     divsArray.push(division);
-    //   }
-
-    //   if (!dateObj[date]) {
-    //     dateObj[date] = [];
-    //   }
-
-    //    // Формируем объект события
-    //    const eventObject: any = {
-    //     title,
-    //     start: startDateTime,
-    //     end: endDateTime,
-    //     object: employment || object,
-    //     type: taskTypeNew,
-    //     time: timeOnObj || time,
-    //     globTime: time,
-    //     subType: subTaskTypeNew,
-    //     fullDescription,
-    //     employment,
-    //     objID,
-    //     meth,
-    //     location,
-    //     methObj,
-    //     methZones,
-    //     isApproved,
-    //     isBlocked,
-    //     dayID,
-    //     position,
-    //   };
-
-    //   // Добавляем новые поля, если метод соответствует
-    //   if (isRKMethod) {
-    //     eventObject.brigadeList = brigadeList;
-    //     eventObject.isBrigadier = isBrigadier;
-    //   }
-
-    //   if (
-    //     employment &&
-    //     (employment === 'Отпуск' ||
-    //       employment === 'Больничный' ||
-    //       employment === 'Выходной')
-    //   ) {
-    //     dateObj[date].push({
-    //       title,
-    //       start: startDateTime,
-    //       end: endDateTime,
-    //       object: employment,
-    //       type: taskTypeNew,
-    //       time,
-    //       subType: subTaskTypeNew,
-    //       fullDescription,
-    //       employment,
-    //       objID,
-    //       location,
-    //       methObj,
-    //       methZones,
-    //       isApproved,
-    //       isBlocked,
-    //       dayID,
-    //       position,
-    //     });
-    //     total += Number(time);
-    //   } else if (
-    //     timeOnObj != '' &&
-    //     employment &&
-    //     (employment !== 'Отпуск' ||
-    //       employment !== 'Больничный' ||
-    //       employment !== 'Выходной')
-    //   ) {
-    //     dateObj[date].push({
-    //       title,
-    //       object,
-    //       start: startDateTime,
-    //       end: endDateTime,
-    //       type: taskTypeNew,
-    //       time: timeOnObj,
-    //       globTime: time,
-    //       subType: subTaskTypeNew,
-    //       fullDescription,
-    //       employment,
-    //       objID,
-    //       meth,
-    //       location,
-    //       methObj,
-    //       methZones,
-    //       isApproved,
-    //       isBlocked,
-    //       dayID,
-    //       position,
-    //     });
-    //     total += Number(timeOnObj);
-    //   } else if (
-    //     employment &&
-    //     (employment !== 'Отпуск' ||
-    //       employment !== 'Больничный' ||
-    //       employment !== 'Выходной')
-    //   ) {
-    //     dateObj[date].push({
-    //       title,
-    //       start: startDateTime,
-    //       end: endDateTime,
-    //       object,
-    //       type: taskTypeNew,
-    //       time,
-    //       subType: subTaskTypeNew,
-    //       fullDescription,
-    //       employment,
-    //       objID,
-    //       location,
-    //       methObj,
-    //       methZones,
-    //       isApproved,
-    //       isBlocked,
-    //       dayID,
-    //       position,
-    //     });
-    //     total += Number(time);
-    //   }
-    // });
-
     // [{},{},{}] => ''
     
     nameArray.forEach((nameA: any[]) => {
@@ -682,7 +487,7 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date): Promi
     
       // Добавляем новые поля, если метод соответствует
       if (isRKMethod) {
-        eventObject.brigadeList = brigadeList;
+        eventObject.brigadeList = initialsStr(brigadeList);
         eventObject.isBrigadier = isBrigadier;
       }
     
@@ -833,7 +638,6 @@ export const getUsersForManagers = async (startDate: Date, endDate: Date): Promi
 
 
   const eventsDataFioObjAll = eventsDataFioObj;
-  console.log("🚀 ~ getUsersForManagers ~ eventsDataFioObjAll:", eventsDataFioObjAll)
 
   const eventsDataFioObjLinked = eventsDataFioObj;
 

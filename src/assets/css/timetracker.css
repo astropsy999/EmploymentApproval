@@ -340,3 +340,13 @@
 .close-btn-on-menu:hover {
   font-weight: bold;
 }
+
+.brigadeList {
+  color: #3c69a3 !important;
+  font-size: 0.6rem !important;
+  font-weight: 300;
+}
+
+.isBrigadier {
+  padding-right: 3px;
+}
