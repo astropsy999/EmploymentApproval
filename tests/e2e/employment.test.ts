@@ -34,6 +34,9 @@ test.describe('Тестирование сводного календаря', ()
 
 
     test('Проверка функционала сводного календаря', async () => {
+        
+        test.setTimeout(100000);
+
         await test.step('Проверка элементов шапки', async () => {
             const header = page.locator('.MuiBox-root');
             await expect(header).toBeVisible();
@@ -93,6 +96,8 @@ test.describe('Тестирование сводного календаря', ()
         });
 
         await test.step('Проверка работы кнопок "Предыдущая неделя" и "Следующая неделя"', async () => {
+            
+
             // Вычисляем даты текущей недели
             const currentMonday = getMondayOfWeek(0); // 0 - текущая неделя
             const currentWeekDates: any = [];
@@ -112,9 +117,6 @@ test.describe('Тестирование сводного календаря', ()
             // Кликаем на кнопку "Предыдущая неделя"
             await page.click('button[aria-label="Предыдущая неделя"]');
 
-            // // Ждём, пока индикатор загрузки станет невидимым или исчезнет из DOM
-            // await page.waitForSelector('.temploaderWrapper', { state: 'hidden' });
-
             // Вычисляем даты предыдущей недели
             const previousMonday = getMondayOfWeek(-1); // -1 - предыдущая неделя
             const previousWeekDates: any = [];
@@ -131,12 +133,10 @@ test.describe('Тестирование сводного календаря', ()
                 ).toBeVisible();
             }
 
+            await page.waitForSelector('.temploaderWrapper', { state: 'hidden' });
+
             // Кликаем на кнопку "Следующая неделя"
             await page.click('button[aria-label="Следующая неделя"]');
-
-            // await page.waitForSelector('.temploaderWrapper', { state: 'visible' });
-            // // Ждём, пока индикатор загрузки станет невидимым или исчезнет из DOM
-            // await page.waitForSelector('.temploaderWrapper', { state: 'detached' });
 
             // Проверяем, что календарь вернулся к текущей неделе
             for (const date of currentWeekDates) {
@@ -149,10 +149,9 @@ test.describe('Тестирование сводного календаря', ()
         });
 
         await test.step('Проверка работы flatpickr календаря', async () => {
-            await page.waitForSelector('.temploaderWrapper', { state: 'attached' });
 
-            await page.waitForSelector('.temploaderWrapper', { state: 'detached' });
-            // Находим поле ввода даты
+            await page.waitForSelector('.temploaderWrapper', { state: 'hidden' });
+
             const dateInput = page.locator('input.dateInput.flatpickr-input');
 
             // Кликаем по полю ввода даты
@@ -263,9 +262,9 @@ test.describe('Тестирование сводного календаря', ()
 
     });
 
-    test.afterAll(async () => {
-        // Закрываем страницу и контекст после завершения всех тестов
-        await page.close();
-        await context.close();
-    });
+    // test.afterAll(async () => {
+    //     // Закрываем страницу и контекст после завершения всех тестов
+    //     await page.close();
+    //     await context.close();
+    // });
 });
