@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node postbuild.cjs",
+    "test:unit": "jest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "preview": "vite"
   },
   "dependencies": {
@@ -29,6 +32,7 @@
     "fs-extra": "^11.2.0",
     "ky": "^0.33.2",
     "material-ui-popup-state": "^5.0.9",
+    "playwright": "^1.48.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-flatpickr": "^3.10.13",
@@ -38,6 +42,7 @@
     "zustand": "^4.3.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/react-flatpickr": "^3.8.11",
