@@ -81,7 +81,7 @@ export const UnlockEmploymentModal: React.FC<UnlockEmploymentModalProps> = ({
  
         {unlockIDiDDbArray.length > 0
           ? <ModalHeader title="Массовая разблокировка занятости" onClose={handleCloseSubmitUnlock} color="#2d79e6" />
-          : <ModalHeader title="Выберите сотрудников!" onClose={handleCloseSubmitUnlock} color="red" />
+          : <ModalHeader title="Выберите сотрудников" onClose={handleCloseSubmitUnlock} color="red" />
           }
       
       <DialogContent dividers sx={{ fontSize: 18, maxWidth: 'sm' }}>

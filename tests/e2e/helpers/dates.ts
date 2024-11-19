@@ -8,7 +8,12 @@ export function getMondayOfCurrentWeek() {
     return monday;
 }
 
-export  function formatDate(date: Date): string {
+/**
+ * Форматирует дату в строку по шаблону "dd MMM yy | ddd".
+ * @param date Объект Date.
+ * @returns Отформатированная строка, например: "11 ноя 24 | пн".
+ */
+export function formatDateWithWeekday(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0'); // День месяца с ведущим нулём
     const monthNames = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
     const month = monthNames[date.getMonth()]; // Название месяца
@@ -20,17 +25,22 @@ export  function formatDate(date: Date): string {
 }
 
 /**
- * Возвращает дату понедельника недели, смещенной на offset недель относительно текущей.
- * @param offset Количество недель относительно текущей (-1 для предыдущей, 0 для текущей, 1 для следующей)
+ * Возвращает дату понедельника недели с заданным смещением.
+ * @param offset Смещение относительно текущей недели (0 - текущая, -1 - предыдущая и т.д.).
+ * @returns Объект Date, представляющий понедельник указанной недели.
  */
 export function getMondayOfWeek(offset: number): Date {
-    const currentDate = new Date();
-    const day = currentDate.getDay(); // 0 (вс) до 6 (сб)
-    const diff = (day === 0 ? -6 : 1 - day) + offset * 7;
-    return new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + diff);
+    const today = new Date();
+    const day = today.getDay();
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1) + offset * 7;
+    return new Date(today.setDate(diff));
 }
 
-// Функция для форматирования даты в формат aria-label из flatpickr
+/**
+ * Форматирует дату в строку, используемую в aria-label элемента дня.
+ * @param date Объект Date.
+ * @returns Отформатированная строка
+ */
 export function formatAriaLabel(date: Date): string {
     const day = date.getDate();
     const monthNames = [
@@ -155,4 +165,19 @@ export async function extractStartDateFromHeader(page: Page): Promise<string[]> 
     }
 
     throw new Error('Не удалось найти заголовок столбца с датой.');
+}
+
+
+
+
+/**
+ * Форматирует дату в строку по шаблону "dd MMM yy".
+ * @param date Объект Date.
+ * @returns Отформатированная строка.
+ */
+export function formatDate(date: Date): string {
+    const day = date.getDate();
+    const month = date.toLocaleString('ru-RU', { month: 'short' });
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day} ${month} ${year}`;
 }

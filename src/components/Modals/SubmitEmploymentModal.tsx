@@ -80,7 +80,7 @@ export const SubmitEmploymentModal: React.FC<SubmitEmploymentModalProps> = ({
         />
       ): (
         <ModalHeader
-          title={'Выберите сотрудников!'}
+          title={'Выберите сотрудников'}
           onClose={handleCloseSubmit}
           color={'#2E7D31'}
         />
