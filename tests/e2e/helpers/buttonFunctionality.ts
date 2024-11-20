@@ -73,3 +73,54 @@ export async function verifyButtonFunctionality(
         throw error;
     }
 }
+
+/**
+ * Универсальная функция для проверки функциональности кнопки.
+ * @param page Playwright Page объект.
+ * @param buttonTestId Тестовый идентификатор кнопки.
+ * @param loaderSelector Селектор загрузчика.
+ * @param apiEndpoint Конечная точка API для отслеживания запроса.
+ * @param expectedResponse Ожидаемый ответ от API.
+ */
+export async function verifyUpdateButtonFunctionality(
+    page: Page,
+    buttonTestId: string,
+    apiEndpoint: string,
+): Promise<void> {
+    try {
+        await page.waitForSelector('.temploaderWrapper', { state: 'hidden' });
+
+        logInfo(`Проверка работы кнопки с test-id="${buttonTestId}"`);
+        
+        // Локатор кнопки "Обновить"
+        const updateButton = page.getByTestId(buttonTestId);
+        await expect(updateButton).toBeVisible();
+        await expect(updateButton).toBeEnabled();
+        
+        // Настройка ожидания запроса
+        const [response] = await Promise.all([
+            page.waitForResponse(response => response.url().includes(apiEndpoint) && response.status() === 200),
+            updateButton.click(),
+        ]);
+        
+        logInfo('Кликнули по кнопке "Обновить"');
+        
+         // Проверка появления загрузчика
+         const loader = page.locator('.temploaderWrapper');
+         await expect(loader).toBeVisible({ timeout: 5000 });
+         logInfo('Загрузчик появился');
+         
+         // Ожидание завершения запроса и скрытия загрузчика
+         await expect(loader).toBeHidden({ timeout: 10000 });
+         logInfo('Загрузчик скрыт');
+         
+          // Проверка успешного ответа
+         expect(response.ok()).toBeTruthy(); // Или используйте response.status()
+        // await expect(response.status()).toBe(200);
+        logInfo('Запрос отправлен и получен успешный ответ');
+        
+    } catch (error) {
+        logError(`Ошибка при проверке кнопки "Обновить": ${(error as Error).message}`);
+        throw error;
+    }
+}

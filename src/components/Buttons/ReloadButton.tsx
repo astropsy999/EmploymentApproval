@@ -1,11 +1,18 @@
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
+import React from 'react';
 
-export const ReloadButton = ({ reloadPage }) => {
+interface ReloadButtonProps {
+  reloadPage: () => void;
+}
+
+
+export const ReloadButton: React.FC<ReloadButtonProps> = ({ reloadPage }) => {
   return (
     <Button
       onClick={reloadPage}
-      variant="filled"
+      variant='contained'
+      data-testid='reloadButton'
       sx={{
         color: 'white',
         maxWidth: 40,

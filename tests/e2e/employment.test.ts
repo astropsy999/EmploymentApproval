@@ -1,15 +1,12 @@
-import { BrowserContext, expect, Page } from '@playwright/test';
+import { BrowserContext, Page } from '@playwright/test';
 import test from './fixtures';
-import { extractStartDateFromHeader, formatAriaLabel, formatDate, formatDateWithWeekday, getMondayOfCurrentWeek, getMondayOfWeek } from './helpers/dates';
-import { verifyAllHeaderElements } from './helpers/header';
-import { logError, logInfo, logSuccess } from './helpers/logger';
-import { deselectAllRows, selectRowsInTable, verifyTableIsLoaded, verifyTableLoaded } from './helpers/table';
-import { getFormattedWeekDates, navigateAndVerifyWeek, verifyWeekDatesVisible } from './helpers/week';
+import { verifyButtonFunctionality, verifyUpdateButtonFunctionality } from './helpers/buttonFunctionality';
 import { openCalendar, selectDateInCalendar, verifyCalendarElements, verifyCalendarNavigationButtons, verifyCurrentMonthAndYear, verifyCurrentWeekHighlighted, verifyTableHeadersForWeek } from './helpers/calendar';
-import { clickButton, getButtonByRoleAndName, verifyButtonVisibleAndEnabled } from './helpers/button';
-import { closeModal, verifyEmployeeNamesInModal, verifyModalContent } from './helpers/modal';
-import { ModalContent } from './helpers/types';
-import { verifyButtonFunctionality } from './helpers/buttonFunctionality';
+import { formatDateWithWeekday, getMondayOfCurrentWeek, getMondayOfWeek } from './helpers/dates';
+import { verifyAllHeaderElements } from './helpers/header';
+import { logSuccess } from './helpers/logger';
+import { verifyTableLoaded } from './helpers/table';
+import { getFormattedWeekDates, navigateAndVerifyWeek, verifyWeekDatesVisible } from './helpers/week';
 
 let context: BrowserContext;
 let page: Page;
@@ -146,6 +143,16 @@ test.describe('Тестирование сводного календаря', ()
                 'Необходимо выбрать сотрудников для разблокировки',
                 2 // Количество сотрудников для выбора
             );
+        });
+
+        // Шаг8: Проверка работы кнопки "Обновить"
+        await test.step('Проверка работы кнопки "Обновить"', async () => {
+            await verifyUpdateButtonFunctionality(
+                authenticatedPage,
+                'reloadButton', 
+                'https://telegram.giapdc.ru:8443/index.php/ObjectController/GetTableData' 
+            );
+            logSuccess('Кнопка "Обновить" корректно работает.');
         });
 
     });
