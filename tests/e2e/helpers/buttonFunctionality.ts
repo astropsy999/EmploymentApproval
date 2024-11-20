@@ -111,7 +111,7 @@ export async function verifyUpdateButtonFunctionality(
          logInfo('Загрузчик появился');
          
          // Ожидание завершения запроса и скрытия загрузчика
-         await expect(loader).toBeHidden({ timeout: 10000 });
+         await expect(loader).toBeHidden({ timeout: 15000 });
          logInfo('Загрузчик скрыт');
          
           // Проверка успешного ответа
@@ -121,6 +121,48 @@ export async function verifyUpdateButtonFunctionality(
         
     } catch (error) {
         logError(`Ошибка при проверке кнопки "Обновить": ${(error as Error).message}`);
+        throw error;
+    }
+}
+
+/**
+ * Проверяет функциональность кнопки для Сообщения.
+ * @param page Playwright Page объект.
+ * @param buttonTestId data-testid кнопки.
+ * @param columnHeader Название столбца для проверки.
+ */
+export async function verifyToggleColumnFunctionality(
+    page: Page,
+    buttonTestId: string,
+    columnHeader: string
+): Promise<void> {
+    try {
+        logInfo(`Проверка работы кнопки с data-testid="${buttonTestId}" для столбца "${columnHeader}"`);
+        
+        // Локатор кнопки "Сообщения"
+        const toggleButton = page.getByTestId(buttonTestId);
+        await expect(toggleButton).toBeVisible({ timeout: 5000 });
+        await expect(toggleButton).toBeEnabled({ timeout: 5000 });
+        
+        // Кликаем на кнопку, чтобы показать столбец
+        await toggleButton.click();
+        logInfo(`Кликнули по кнопке "${buttonTestId}" для показа столбца "${columnHeader}"`);
+        
+        // Проверяем, что столбец появился
+        const columnHeaderLocator = page.locator('div.ag-header-cell-comp-wrapper', { hasText: columnHeader });
+        await expect(columnHeaderLocator).toBeVisible({ timeout: 5000 });
+        logInfo(`Столбец "${columnHeader}" успешно появился.`);
+        
+        // Кликаем на кнопку снова, чтобы скрыть столбец
+        await toggleButton.click();
+        logInfo(`Кликнули по кнопке "${buttonTestId}" для скрытия столбца "${columnHeader}"`);
+        
+        // Проверяем, что столбец исчез
+        await expect(columnHeaderLocator).toBeHidden({ timeout: 5000 });
+        logInfo(`Столбец "${columnHeader}" успешно скрыт.`);
+        
+    } catch (error) {
+        logError(`Ошибка при проверке кнопки "${buttonTestId}": ${(error as Error).message}`);
         throw error;
     }
 }

@@ -29,6 +29,7 @@ export const ToggleMessages = () => {
       onClick={toggleMessageColumnVisibility}
       variant="text"
       color="primary"
+      data-testid='messagesButton'
       sx={{
         color: isMessageColumnVisible ? 'white' : '#0088D1',
         '&:hover': {

@@ -1,6 +1,6 @@
 import { BrowserContext, Page } from '@playwright/test';
 import test from './fixtures';
-import { verifyButtonFunctionality, verifyUpdateButtonFunctionality } from './helpers/buttonFunctionality';
+import { verifyButtonFunctionality, verifyToggleColumnFunctionality, verifyUpdateButtonFunctionality } from './helpers/buttonFunctionality';
 import { openCalendar, selectDateInCalendar, verifyCalendarElements, verifyCalendarNavigationButtons, verifyCurrentMonthAndYear, verifyCurrentWeekHighlighted, verifyTableHeadersForWeek } from './helpers/calendar';
 import { formatDateWithWeekday, getMondayOfCurrentWeek, getMondayOfWeek } from './helpers/dates';
 import { verifyAllHeaderElements } from './helpers/header';
@@ -145,7 +145,7 @@ test.describe('Тестирование сводного календаря', ()
             );
         });
 
-        // Шаг8: Проверка работы кнопки "Обновить"
+        // Шаг 8: Проверка работы кнопки "Обновить"
         await test.step('Проверка работы кнопки "Обновить"', async () => {
             await verifyUpdateButtonFunctionality(
                 authenticatedPage,
@@ -153,6 +153,17 @@ test.describe('Тестирование сводного календаря', ()
                 'https://telegram.giapdc.ru:8443/index.php/ObjectController/GetTableData' 
             );
             logSuccess('Кнопка "Обновить" корректно работает.');
+        });
+
+        // Шаг 9: Проверка работы кнопки "Сообщения"
+        await test.step('Проверка работы кнопки "Сообщения"', async () => {
+            await verifyToggleColumnFunctionality(
+                authenticatedPage,
+                'messagesButton', 
+                'СООБЩЕНИЕ'
+            );
+
+            logSuccess('Кнопка "Сообщения" корректно работает.');
         });
 
     });
