@@ -1,6 +1,6 @@
 import { BrowserContext, Page } from '@playwright/test';
 import test from './fixtures';
-import { verifyButtonFunctionality, verifyToggleColumnFunctionality, verifyUpdateButtonFunctionality } from './helpers/buttonFunctionality';
+import { verifyButtonFunctionality, verifyEmployeeListButtonFunctionality, verifyToggleColumnFunctionality, verifyUpdateButtonFunctionality } from './helpers/buttonFunctionality';
 import { openCalendar, selectDateInCalendar, verifyCalendarElements, verifyCalendarNavigationButtons, verifyCurrentMonthAndYear, verifyCurrentWeekHighlighted, verifyTableHeadersForWeek } from './helpers/calendar';
 import { formatDateWithWeekday, getMondayOfCurrentWeek, getMondayOfWeek } from './helpers/dates';
 import { verifyAllHeaderElements } from './helpers/header';
@@ -164,6 +164,16 @@ test.describe('Тестирование сводного календаря', ()
             );
 
             logSuccess('Кнопка "Сообщения" корректно работает.');
+        });
+
+         // Шаг10 : Проверка работы кнопки "Список сотрудников"
+         await test.step('Проверка работы кнопки "Список сотрудников"', async () => {
+            await verifyEmployeeListButtonFunctionality(
+                authenticatedPage,
+                'employeeListButton', 
+            );
+
+            logSuccess('Кнопка "Список сотрудников" корректно работает.');
         });
 
     });

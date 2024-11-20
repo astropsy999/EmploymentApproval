@@ -166,3 +166,42 @@ export async function verifyToggleColumnFunctionality(
         throw error;
     }
 }
+
+
+/**
+ * Проверяет функциональность кнопки "Список сотрудников".
+ * @param page Playwright Page объект.
+ * @param buttonTestId data-testid кнопки.
+ * @param columnHeader Название столбца для проверки.
+ */
+export async function verifyEmployeeListButtonFunctionality(
+    page: Page,
+    buttonTestId: string,
+): Promise<void> {
+    try {
+        logInfo(`Проверка работы кнопки с data-testid="${buttonTestId}" для столбца`);
+        
+        // Локатор кнопки "Список сотрудников"
+        const toggleButton = page.getByTestId(buttonTestId);
+        await expect(toggleButton).toBeVisible({ timeout: 5000 });
+        await expect(toggleButton).toBeEnabled({ timeout: 5000 });
+        
+        // Кликаем на кнопку, чтобы показать столбец
+        await toggleButton.click();
+        logInfo(`Кликнули по кнопке "${buttonTestId}" для показа окна для выбора сотрудников`);
+        
+        // Проверяем, что окно открылось
+        const employmentListWindow = page.locator('div.ag-virtual-list-container');
+        await expect(employmentListWindow).toBeVisible({ timeout: 5000 });
+        logInfo(`Окно со списком сотрудников успешно появилось.`);
+
+        const closeBtn = page.locator('button.close-btn-on-menu');
+        await closeBtn.click()
+        logInfo(`Окно со списком сотрудников успешно скрыто по нажатию на крестик.`);
+        
+        
+    } catch (error) {
+        logError(`Ошибка при проверке кнопки "${buttonTestId}": ${(error as Error).message}`);
+        throw error;
+    }
+}

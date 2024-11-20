@@ -15,7 +15,7 @@ import {
   multiLockEmloyment,
   multiUnlockEmloyment,
 } from '../data/api';
-import { addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
+import { addAttrToElem, addTitleAttrToElem } from '../helpers/addTitleAttrToElem';
 import { calculateTotalRow } from '../helpers/calculateTotalRows';
 import { customLoader } from '../helpers/customLoader';
 import { formatDateToKey, getDatesInRange } from '../helpers/datesRanges';
@@ -161,7 +161,9 @@ const TimeTracker = memo(() => {
 
     calculateTotalRow(gridRef);
     const getMenuBtn = document.querySelector('[ref="eMenu"]') as HTMLElement;
-    addTitleAttrToElem(getMenuBtn, 'Список сотрудников');
+    // addTitleAttrToElem(getMenuBtn, 'Список сотрудников');
+    addAttrToElem(getMenuBtn, 'title', 'Список сотрудников');
+    addAttrToElem(getMenuBtn, 'data-testid', 'employeeListButton');
     (document?.querySelector('.ag-center-cols-viewport') as HTMLElement).style.height =
       'calc(100% + 20px)';
   }
